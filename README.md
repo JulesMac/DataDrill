@@ -2,6 +2,19 @@
 
 DataDrill is a small demonstration project managed with [Poetry](https://python-poetry.org/).
 
+## Lines of Code
+
+Statistics generated with [cloc](https://github.com/AlDanial/cloc):
+
+| Language | Files | Blank | Comment | Code |
+|----------|------:|------:|--------:|-----:|
+| Python   | 4 | 91 | 14 | 260 |
+| Markdown | 2 | 23 | 0 | 51 |
+| YAML     | 2 | 2 | 0 | 42 |
+| TOML     | 1 | 6 | 0 | 23 |
+| Text     | 2 | 2 | 0 | 9 |
+| **Total** | 11 | 124 | 14 | 385 |
+
 ## Development
 
 Install dependencies using Poetry:
