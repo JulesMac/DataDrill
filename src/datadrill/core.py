@@ -11,6 +11,6 @@ def sample_dataframe_with_modified() -> pl.DataFrame:
     return pl.DataFrame(
         {
             "numbers": [1, 2, 3],
-            "numbers_modified": [10, 20, 30],
+            "modified_numbers": [10, 20, 30],
         }
     )
