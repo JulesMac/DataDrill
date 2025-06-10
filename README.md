@@ -26,3 +26,8 @@ Run unit tests using pytest:
 poetry run pytest
 ```
 
+### Test and Lint Reports
+
+Sample output from running pre-commit and pytest is stored in the `reports/`
+directory. These logs are generated in CI and committed for reference.
+
