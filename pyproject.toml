@@ -7,7 +7,7 @@ readme = "README.md"
 packages = [{ include = "datadrill", from = "src" }]
 
 [tool.poetry.dependencies]
-python = "^3.11"
+python = "^3.12"
 polars = "^1.30.0"
 
 [tool.poetry.group.dev.dependencies]
