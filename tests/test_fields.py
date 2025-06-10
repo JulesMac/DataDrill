@@ -33,3 +33,31 @@ def test_use_prefix_overrides_env():
 
     result = df.select(use_prefix("modified_")(numbers())(env))
     assert result["modified_numbers"].to_list() == [10, 20, 30]
+
+
+def test_add_two_fields():
+    df = sample_dataframe_with_modified()
+    env = Environment(FieldResolver(df.columns))
+    numbers = Field("numbers")
+    modified = Field("modified_numbers")
+
+    result = df.select((numbers() + modified())(env))
+    assert result["numbers"].to_list() == [11, 22, 33]
+
+
+def test_add_field_with_prefix():
+    df = sample_dataframe_with_modified()
+    env = Environment(FieldResolver(df.columns))
+    numbers = Field("numbers")
+
+    result = df.select((numbers() + use_prefix("modified_")(numbers()))(env))
+    assert result["numbers"].to_list() == [11, 22, 33]
+
+
+def test_add_scalar():
+    df = sample_dataframe_with_modified()
+    env = Environment(FieldResolver(df.columns))
+    numbers = Field("numbers")
+
+    result = df.select((numbers() + 1)(env))
+    assert result["numbers"].to_list() == [2, 3, 4]
