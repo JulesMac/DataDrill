@@ -74,3 +74,31 @@ df.select(use_prefix("modified_")(numbers())(env))
 modified = Field("modified_numbers")
 df.select((numbers() + modified())(env))
 ```
+
+## Custom Field Functions
+
+Use ``@field_function`` to create reusable Polars logic that works with
+``Field`` parameters and regular arguments.
+
+```python
+from datadrill import (
+    Environment,
+    Field,
+    FieldResolver,
+    field_function,
+    sample_dataframe_with_modified,
+)
+import polars as pl
+
+@field_function
+def add_and_scale(a: pl.Expr, b: pl.Expr, factor: int) -> pl.Expr:
+    return (a + b) * factor
+
+df = sample_dataframe_with_modified()
+env = Environment(FieldResolver(df.columns))
+numbers = Field("numbers")
+modified = Field("modified_numbers")
+
+df.select(add_and_scale(numbers, modified, factor=2)(env))
+# [22, 44, 66]
+```

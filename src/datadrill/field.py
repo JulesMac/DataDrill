@@ -1,7 +1,8 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import Callable, Sequence, Union
+from typing import Callable, Sequence, Union, Any, get_type_hints
+import inspect
 
 import polars as pl
 
@@ -268,3 +269,43 @@ def get_data(name: str) -> Reader:
         return pl.col(column)
 
     return Reader(reader)
+
+
+def field_function(func: Callable[..., pl.Expr]) -> Callable[..., Reader]:
+    """Wrap ``func`` so it produces a :class:`Reader` when called."""
+
+    sig = inspect.signature(func)
+    hints = get_type_hints(func)
+
+    dynamic: set[str] = set()
+    for name, param in sig.parameters.items():
+        ann = hints.get(name, param.annotation)
+        if ann in {Field, Reader, pl.Expr} or ann is inspect._empty:
+            dynamic.add(name)
+
+    def factory(*args: Any, **kwargs: Any) -> Reader:
+        bound = sig.bind_partial(*args, **kwargs)
+        bound.apply_defaults()
+
+        def reader(env: Environment) -> pl.Expr:
+            call_args = []
+            call_kwargs = {}
+            for name, param in sig.parameters.items():
+                value = bound.arguments.get(name, param.default)
+                if name in dynamic:
+                    value = Reader._expr_from(value, env)
+                if param.kind in (
+                    inspect.Parameter.POSITIONAL_ONLY,
+                    inspect.Parameter.POSITIONAL_OR_KEYWORD,
+                ):
+                    call_args.append(value)
+                elif param.kind == inspect.Parameter.KEYWORD_ONLY:
+                    call_kwargs[name] = value
+                else:
+                    raise TypeError("varargs are not supported")
+            result = func(*call_args, **call_kwargs)
+            return Reader._expr_from(result, env)
+
+        return Reader(reader)
+
+    return factory

@@ -6,6 +6,7 @@ from .field import (
     Field,
     FieldResolver,
     Reader,
+    field_function,
     get_data,
     use_prefix,
 )
@@ -16,6 +17,7 @@ __all__ = [
     "FieldResolver",
     "Field",
     "Reader",
+    "field_function",
     "get_data",
     "use_prefix",
 ]
