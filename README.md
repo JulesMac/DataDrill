@@ -28,6 +28,7 @@ poetry run pytest
 
 ### Test and Lint Reports
 
-Sample output from running pre-commit and pytest is stored in the `reports/`
-directory. These logs are generated in CI and committed for reference.
+Test logs and a JUnit XML report are stored in the `reports/` directory.
+During continuous integration these files are uploaded as an artifact named
+`test-report`.
 

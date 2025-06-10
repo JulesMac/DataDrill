@@ -22,4 +22,11 @@ jobs:
       - name: Run linter
         run: poetry run pre-commit run --all-files --show-diff-on-failure --color always
       - name: Run tests
-        run: poetry run pytest -q
+        run: |
+          mkdir -p reports
+          poetry run pytest -q --junitxml=reports/junit.xml | tee reports/pytest.txt
+      - name: Upload test report
+        uses: actions/upload-artifact@v3
+        with:
+          name: test-report
+          path: reports/
