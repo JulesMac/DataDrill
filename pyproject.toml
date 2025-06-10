@@ -1,0 +1,29 @@
+[tool.poetry]
+name = "datadrill"
+version = "0.1.0"
+description = "Data Query tool"
+authors = ["Codex <codex@openai.com>"]
+readme = "README.md"
+packages = [{ include = "datadrill", from = "src" }]
+
+[tool.poetry.dependencies]
+python = "^3.11"
+polars = "^1.30.0"
+
+[tool.poetry.group.dev.dependencies]
+pytest = "^8.4.0"
+ruff = "^0.11.13"
+black = "^25.1.0"
+pre-commit = "^4.2.0"
+
+[build-system]
+requires = ["poetry-core>=1.8.0"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.ruff]
+select = ["E", "F"]
+line-length = 88
+
+[tool.black]
+line-length = 88
+
