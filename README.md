@@ -69,4 +69,8 @@ df.select(numbers()(env))
 
 # Force the "modified_" prefix
 df.select(use_prefix("modified_")(numbers())(env))
+
+# Combine fields with arithmetic operators
+modified = Field("modified_numbers")
+df.select((numbers() + modified())(env))
 ```
