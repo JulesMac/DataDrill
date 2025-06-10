@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import Callable, Sequence
+from typing import Callable, Sequence, Union
 
 import polars as pl
 
@@ -44,7 +44,192 @@ class Environment:
         return Environment(self.resolver.clear_prefix())
 
 
-Reader = Callable[[Environment], pl.Expr]
+ReaderFunc = Callable[[Environment], pl.Expr]
+
+
+class Reader:
+    """Callable wrapper supporting expression operators."""
+
+    def __init__(self, func: ReaderFunc):
+        self._func = func
+
+    def __call__(self, env: Environment) -> pl.Expr:
+        return self._func(env)
+
+    @staticmethod
+    def _expr_from(
+        value: Union["Reader", "Field", ReaderFunc, pl.Expr, int, float],
+        env: Environment,
+    ) -> pl.Expr:
+        if isinstance(value, Reader):
+            return value(env)
+        if isinstance(value, Field):
+            return value()(env)
+        if callable(value):  # treat as ReaderFunc
+            return value(env)
+        if isinstance(value, pl.Expr):
+            return value
+        return pl.lit(value)
+
+    def _binary_op(
+        self,
+        other: Union["Reader", "Field", ReaderFunc, pl.Expr, int, float],
+        op: Callable[[pl.Expr, pl.Expr], pl.Expr],
+        *,
+        reverse: bool = False,
+    ) -> "Reader":
+        def wrapper(env: Environment) -> pl.Expr:
+            left = self._expr_from(self, env)
+            right = self._expr_from(other, env)
+            if reverse:
+                left, right = right, left
+            return op(left, right)
+
+        return Reader(wrapper)
+
+    def __add__(
+        self, other: Union["Reader", "Field", ReaderFunc, pl.Expr, int, float]
+    ) -> "Reader":
+        return self._binary_op(other, lambda a, b: a + b)
+
+    def __radd__(
+        self, other: Union["Reader", "Field", ReaderFunc, pl.Expr, int, float]
+    ) -> "Reader":
+        return self._binary_op(other, lambda a, b: a + b, reverse=True)
+
+    def __sub__(
+        self, other: Union["Reader", "Field", ReaderFunc, pl.Expr, int, float]
+    ) -> "Reader":
+        return self._binary_op(other, lambda a, b: a - b)
+
+    def __rsub__(
+        self, other: Union["Reader", "Field", ReaderFunc, pl.Expr, int, float]
+    ) -> "Reader":
+        return self._binary_op(other, lambda a, b: a - b, reverse=True)
+
+    def __mul__(
+        self, other: Union["Reader", "Field", ReaderFunc, pl.Expr, int, float]
+    ) -> "Reader":
+        return self._binary_op(other, lambda a, b: a * b)
+
+    def __rmul__(
+        self, other: Union["Reader", "Field", ReaderFunc, pl.Expr, int, float]
+    ) -> "Reader":
+        return self._binary_op(other, lambda a, b: a * b, reverse=True)
+
+    def __truediv__(
+        self, other: Union["Reader", "Field", ReaderFunc, pl.Expr, int, float]
+    ) -> "Reader":
+        return self._binary_op(other, lambda a, b: a / b)
+
+    def __rtruediv__(
+        self, other: Union["Reader", "Field", ReaderFunc, pl.Expr, int, float]
+    ) -> "Reader":
+        return self._binary_op(other, lambda a, b: a / b, reverse=True)
+
+    def __floordiv__(
+        self, other: Union["Reader", "Field", ReaderFunc, pl.Expr, int, float]
+    ) -> "Reader":
+        return self._binary_op(other, lambda a, b: a // b)
+
+    def __rfloordiv__(
+        self, other: Union["Reader", "Field", ReaderFunc, pl.Expr, int, float]
+    ) -> "Reader":
+        return self._binary_op(other, lambda a, b: a // b, reverse=True)
+
+    def __mod__(
+        self, other: Union["Reader", "Field", ReaderFunc, pl.Expr, int, float]
+    ) -> "Reader":
+        return self._binary_op(other, lambda a, b: a % b)
+
+    def __rmod__(
+        self, other: Union["Reader", "Field", ReaderFunc, pl.Expr, int, float]
+    ) -> "Reader":
+        return self._binary_op(other, lambda a, b: a % b, reverse=True)
+
+    def __pow__(
+        self, other: Union["Reader", "Field", ReaderFunc, pl.Expr, int, float]
+    ) -> "Reader":
+        return self._binary_op(other, lambda a, b: a**b)
+
+    def __rpow__(
+        self, other: Union["Reader", "Field", ReaderFunc, pl.Expr, int, float]
+    ) -> "Reader":
+        return self._binary_op(other, lambda a, b: a**b, reverse=True)
+
+    def __and__(
+        self, other: Union["Reader", "Field", ReaderFunc, pl.Expr, int, float]
+    ) -> "Reader":
+        return self._binary_op(other, lambda a, b: a & b)
+
+    def __rand__(
+        self, other: Union["Reader", "Field", ReaderFunc, pl.Expr, int, float]
+    ) -> "Reader":
+        return self._binary_op(other, lambda a, b: a & b, reverse=True)
+
+    def __or__(
+        self, other: Union["Reader", "Field", ReaderFunc, pl.Expr, int, float]
+    ) -> "Reader":
+        return self._binary_op(other, lambda a, b: a | b)
+
+    def __ror__(
+        self, other: Union["Reader", "Field", ReaderFunc, pl.Expr, int, float]
+    ) -> "Reader":
+        return self._binary_op(other, lambda a, b: a | b, reverse=True)
+
+    def __xor__(
+        self, other: Union["Reader", "Field", ReaderFunc, pl.Expr, int, float]
+    ) -> "Reader":
+        return self._binary_op(other, lambda a, b: a ^ b)
+
+    def __rxor__(
+        self, other: Union["Reader", "Field", ReaderFunc, pl.Expr, int, float]
+    ) -> "Reader":
+        return self._binary_op(other, lambda a, b: a ^ b, reverse=True)
+
+    def __lt__(
+        self, other: Union["Reader", "Field", ReaderFunc, pl.Expr, int, float]
+    ) -> "Reader":
+        return self._binary_op(other, lambda a, b: a < b)
+
+    def __le__(
+        self, other: Union["Reader", "Field", ReaderFunc, pl.Expr, int, float]
+    ) -> "Reader":
+        return self._binary_op(other, lambda a, b: a <= b)
+
+    def __gt__(
+        self, other: Union["Reader", "Field", ReaderFunc, pl.Expr, int, float]
+    ) -> "Reader":
+        return self._binary_op(other, lambda a, b: a > b)
+
+    def __ge__(
+        self, other: Union["Reader", "Field", ReaderFunc, pl.Expr, int, float]
+    ) -> "Reader":
+        return self._binary_op(other, lambda a, b: a >= b)
+
+    def __eq__(self, other: object) -> "Reader":  # type: ignore[override]
+        return self._binary_op(other, lambda a, b: a == b)
+
+    def __ne__(self, other: object) -> "Reader":  # type: ignore[override]
+        return self._binary_op(other, lambda a, b: a != b)
+
+    def __neg__(self) -> "Reader":
+        def wrapper(env: Environment) -> pl.Expr:
+            return -self(env)
+
+        return Reader(wrapper)
+
+    def __pos__(self) -> "Reader":
+        def wrapper(env: Environment) -> pl.Expr:
+            return +self(env)
+
+        return Reader(wrapper)
+
+    def __invert__(self) -> "Reader":
+        def wrapper(env: Environment) -> pl.Expr:
+            return ~self(env)
+
+        return Reader(wrapper)
 
 
 @dataclass(frozen=True)
@@ -60,7 +245,7 @@ class Field:
             column = env.resolver.resolve(self.name)
             return pl.col(column)
 
-        return reader
+        return Reader(reader)
 
 
 def use_prefix(prefix: str) -> Callable[[Reader], Reader]:
@@ -70,7 +255,7 @@ def use_prefix(prefix: str) -> Callable[[Reader], Reader]:
         def wrapper(env: Environment) -> pl.Expr:
             return reader(env.with_prefix(prefix))
 
-        return wrapper
+        return Reader(wrapper)
 
     return decorator
 
@@ -82,4 +267,4 @@ def get_data(name: str) -> Reader:
         column = env.resolver.resolve(name)
         return pl.col(column)
 
-    return reader
+    return Reader(reader)
