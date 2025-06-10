@@ -1,2 +1,10 @@
-.                                                                        [100%]
-1 passed in 0.50s
+============================= test session starts ==============================
+platform linux -- Python 3.13.3, pytest-8.4.0, pluggy-1.6.0
+rootdir: /workspace/DataDrill
+configfile: pyproject.toml
+collected 2 items
+
+tests/test_core.py .                                                     [ 50%]
+tests/test_dump.py .                                                     [100%]
+
+============================== 2 passed in 0.18s ===============================
