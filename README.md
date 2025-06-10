@@ -102,3 +102,20 @@ modified = Field("modified_numbers")
 df.select(add_and_scale(numbers, modified, factor=2)(env))
 # [22, 44, 66]
 ```
+
+## Series Functions
+
+The ``@series_function`` decorator lets you define custom logic using
+``polars.Series`` values. The wrapped function is executed via
+``Expr.map_batches`` so it integrates with lazy expressions.
+
+```python
+from datadrill import series_function
+
+@series_function
+def add_and_scale_series(a: pl.Series, b: pl.Series, factor: int) -> pl.Series:
+    return (a + b) * factor
+
+df.select(add_and_scale_series(numbers, modified, factor=2)(env))
+# [22, 44, 66]
+```

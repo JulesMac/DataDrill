@@ -6,6 +6,7 @@ from datadrill import (
     use_prefix,
     sample_dataframe_with_modified,
     field_function,
+    series_function,
 )
 
 
@@ -36,3 +37,18 @@ def test_field_function_with_reader_arg():
 
     result = df.select(add_two(numbers, use_prefix("modified_")(numbers()))(env))
     assert result.to_series().to_list() == [11, 22, 33]
+
+
+@series_function
+def add_and_scale_series(a: pl.Series, b: pl.Series, factor: int) -> pl.Series:
+    return (a + b) * factor
+
+
+def test_series_function_basic():
+    df = sample_dataframe_with_modified()
+    env = Environment(FieldResolver(df.columns))
+    numbers = Field("numbers")
+    modified = Field("modified_numbers")
+
+    result = df.select(add_and_scale_series(numbers, modified, factor=2)(env))
+    assert result.to_series().to_list() == [22, 44, 66]

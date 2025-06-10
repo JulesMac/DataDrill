@@ -309,3 +309,58 @@ def field_function(func: Callable[..., pl.Expr]) -> Callable[..., Reader]:
         return Reader(reader)
 
     return factory
+
+
+def series_function(func: Callable[..., pl.Series]) -> Callable[..., Reader]:
+    """Wrap ``func`` so it operates on :class:`polars.Series` values."""
+
+    sig = inspect.signature(func)
+    hints = get_type_hints(func)
+
+    dynamic: set[str] = set()
+    for name, param in sig.parameters.items():
+        ann = hints.get(name, param.annotation)
+        if ann in {Field, Reader, pl.Expr, pl.Series} or ann is inspect._empty:
+            dynamic.add(name)
+
+    def factory(*args: Any, **kwargs: Any) -> Reader:
+        bound = sig.bind_partial(*args, **kwargs)
+        bound.apply_defaults()
+
+        def reader(env: Environment) -> pl.Expr:
+            exprs = []
+            constants = {}
+            for name, param in sig.parameters.items():
+                value = bound.arguments.get(name, param.default)
+                if name in dynamic:
+                    expr = Reader._expr_from(value, env).alias(name)
+                    exprs.append(expr)
+                else:
+                    constants[name] = value
+
+            struct_expr = pl.struct(exprs)
+
+            def map_fn(struct: pl.Series) -> pl.Series:
+                call_args = []
+                call_kwargs = {}
+                for name, param in sig.parameters.items():
+                    if name in dynamic:
+                        value = struct.struct.field(name)
+                    else:
+                        value = constants[name]
+                    if param.kind in (
+                        inspect.Parameter.POSITIONAL_ONLY,
+                        inspect.Parameter.POSITIONAL_OR_KEYWORD,
+                    ):
+                        call_args.append(value)
+                    elif param.kind == inspect.Parameter.KEYWORD_ONLY:
+                        call_kwargs[name] = value
+                    else:
+                        raise TypeError("varargs are not supported")
+                return func(*call_args, **call_kwargs)
+
+            return struct_expr.map_batches(map_fn)
+
+        return Reader(reader)
+
+    return factory
