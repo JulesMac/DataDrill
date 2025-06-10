@@ -1,6 +1,6 @@
 """DataDrill package."""
 
-from .core import sample_dataframe, sample_dataframe_with_modified
+from .core import sample_dataframe_with_modified
 from .field import (
     Environment,
     Field,
@@ -10,7 +10,6 @@ from .field import (
 )
 
 __all__ = [
-    "sample_dataframe",
     "sample_dataframe_with_modified",
     "Environment",
     "FieldResolver",
