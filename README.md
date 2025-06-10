@@ -35,17 +35,25 @@ During continuous integration these files are uploaded as an artifact named
 
 ## Field API Example
 
-Fields are callables that resolve Polars expressions based on an environment. A simple environment contains a `modified` flag which chooses between column namespaces.
+Fields are callables that resolve Polars expressions based on an environment.
+An environment now uses a `FieldResolver` which can prefix column names.
 
 ```python
-from datadrill import Environment, Field, use_modified, sample_dataframe_with_modified
+from datadrill import (
+    Environment,
+    Field,
+    FieldResolver,
+    use_prefix,
+    sample_dataframe_with_modified,
+)
 
-numbers = Field("numbers", "numbers_modified")
-env = Environment(modified=False)
+df = sample_dataframe_with_modified()
+env = Environment(FieldResolver(df.columns))
+numbers = Field("numbers")
 
 # Select the unmodified column
-sample_dataframe_with_modified().select(numbers()(env))
+df.select(numbers()(env))
 
-# Force the modified namespace
-sample_dataframe_with_modified().select(use_modified(numbers())(env))
+# Force the "modified_" prefix
+df.select(use_prefix("modified_")(numbers())(env))
 ```
