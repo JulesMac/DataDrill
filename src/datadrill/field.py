@@ -1,8 +1,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import Callable, Sequence, Any, get_type_hints
-import inspect
+from typing import Callable, Sequence, Any
 
 import polars as pl
 
@@ -271,47 +270,15 @@ def get_data(name: str) -> Reader:
     return Reader(reader)
 
 
-def field_function(func: Callable[..., pl.Expr]) -> Callable[..., Reader]:
-    """Wrap ``func`` so it produces a :class:`Reader` when called."""
-
-    # Inspect the target function so we can bind its parameters dynamically
-    sig = inspect.signature(func)
-    hints = get_type_hints(func)
-
-    # Parameters annotated as ``Field``/``Reader``/``Expr`` should be resolved
-    # when the returned ``Reader`` executes.
-    dynamic: set[str] = set()
-    for name, param in sig.parameters.items():
-        ann = hints.get(name, param.annotation)
-        if ann in {Field, Reader, pl.Expr} or ann is inspect._empty:
-            dynamic.add(name)
+def field_function(func: Callable[..., Any]) -> Callable[..., Reader]:
+    """Wrap ``func`` so the return value becomes a :class:`Reader`."""
 
     def factory(*args: Any, **kwargs: Any) -> Reader:
-        # Partially bind provided arguments; remaining values will come from
-        # the execution environment when the ``Reader`` is evaluated.
-        bound = sig.bind_partial(*args, **kwargs)
-        bound.apply_defaults()
+        result = func(*args, **kwargs)
+        if isinstance(result, Reader):
+            return result
 
         def reader(env: Environment) -> pl.Expr:
-            # Resolve arguments to a mix of Polars expressions and constants
-            call_args = []
-            call_kwargs = {}
-            for name, param in sig.parameters.items():
-                value = bound.arguments.get(name, param.default)
-                if name in dynamic:
-                    value = Reader._expr_from(value, env)
-                if param.kind in (
-                    inspect.Parameter.POSITIONAL_ONLY,
-                    inspect.Parameter.POSITIONAL_OR_KEYWORD,
-                ):
-                    call_args.append(value)
-                elif param.kind == inspect.Parameter.KEYWORD_ONLY:
-                    call_kwargs[name] = value
-                else:
-                    raise TypeError("varargs are not supported")
-
-            result = func(*call_args, **call_kwargs)
-            # The result might be a scalar or an expression; normalize it
             return Reader._expr_from(result, env)
 
         return Reader(reader)
@@ -322,55 +289,50 @@ def field_function(func: Callable[..., pl.Expr]) -> Callable[..., Reader]:
 def series_function(func: Callable[..., pl.Series]) -> Callable[..., Reader]:
     """Wrap ``func`` so it operates on :class:`polars.Series` values."""
 
-    # Discover how to call ``func`` so we can construct a Polars expression
-    sig = inspect.signature(func)
-    hints = get_type_hints(func)
-
-    # Determine which parameters should be resolved from the environment when
-    # the resulting ``Reader`` is executed.
-    dynamic: set[str] = set()
-    for name, param in sig.parameters.items():
-        ann = hints.get(name, param.annotation)
-        if ann in {Field, Reader, pl.Expr, pl.Series} or ann is inspect._empty:
-            dynamic.add(name)
-
     def factory(*args: Any, **kwargs: Any) -> Reader:
-        # Bind any provided arguments now and defer the rest until execution
-        bound = sig.bind_partial(*args, **kwargs)
-        bound.apply_defaults()
-
         def reader(env: Environment) -> pl.Expr:
-            # Build a struct expression containing all dynamic arguments
             exprs = []
             constants = {}
-            for name, param in sig.parameters.items():
-                value = bound.arguments.get(name, param.default)
-                if name in dynamic:
-                    expr = Reader._expr_from(value, env).alias(name)
-                    exprs.append(expr)
+
+            for i, value in enumerate(args):
+                name = f"_{i}"
+                if (
+                    isinstance(value, (Reader, Field))
+                    or callable(value)
+                    or isinstance(value, pl.Expr)
+                ):
+                    exprs.append(Reader._expr_from(value, env).alias(name))
+                else:
+                    constants[name] = value
+
+            for name, value in kwargs.items():
+                if (
+                    isinstance(value, (Reader, Field))
+                    or callable(value)
+                    or isinstance(value, pl.Expr)
+                ):
+                    exprs.append(Reader._expr_from(value, env).alias(name))
                 else:
                     constants[name] = value
 
             struct_expr = pl.struct(exprs)
 
             def map_fn(struct: pl.Series) -> pl.Series:
-                # Unpack the struct back into arguments for ``func``
                 call_args = []
+                for i in range(len(args)):
+                    name = f"_{i}"
+                    if name in constants:
+                        call_args.append(constants[name])
+                    else:
+                        call_args.append(struct.struct.field(name))
+
                 call_kwargs = {}
-                for name, param in sig.parameters.items():
-                    if name in dynamic:
-                        value = struct.struct.field(name)
+                for key in kwargs.keys():
+                    if key in constants:
+                        call_kwargs[key] = constants[key]
                     else:
-                        value = constants[name]
-                    if param.kind in (
-                        inspect.Parameter.POSITIONAL_ONLY,
-                        inspect.Parameter.POSITIONAL_OR_KEYWORD,
-                    ):
-                        call_args.append(value)
-                    elif param.kind == inspect.Parameter.KEYWORD_ONLY:
-                        call_kwargs[name] = value
-                    else:
-                        raise TypeError("varargs are not supported")
+                        call_kwargs[key] = struct.struct.field(key)
+
                 return func(*call_args, **call_kwargs)
 
             return struct_expr.map_batches(map_fn)
