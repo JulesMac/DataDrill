@@ -378,3 +378,33 @@ def series_function(func: Callable[..., pl.Series]) -> Callable[..., Reader]:
         return Reader(reader)
 
     return factory
+
+
+def map(
+    func: Callable[[pl.Expr], pl.Expr | int | float],
+    reader: Reader | Field | ReaderFunc | pl.Expr | int | float,
+) -> Reader:
+    """Apply ``func`` to ``reader`` using the execution environment."""
+
+    def wrapper(env: Environment) -> pl.Expr:
+        value = Reader._expr_from(reader, env)
+        result = func(value)
+        return Reader._expr_from(result, env)
+
+    return Reader(wrapper)
+
+
+def map2(
+    func: Callable[[pl.Expr, pl.Expr], pl.Expr | int | float],
+    reader1: Reader | Field | ReaderFunc | pl.Expr | int | float,
+    reader2: Reader | Field | ReaderFunc | pl.Expr | int | float,
+) -> Reader:
+    """Apply ``func`` to ``reader1`` and ``reader2`` using the environment."""
+
+    def wrapper(env: Environment) -> pl.Expr:
+        value1 = Reader._expr_from(reader1, env)
+        value2 = Reader._expr_from(reader2, env)
+        result = func(value1, value2)
+        return Reader._expr_from(result, env)
+
+    return Reader(wrapper)
