@@ -85,13 +85,14 @@ from datadrill import (
     Environment,
     Field,
     FieldResolver,
+    Reader,
     field_function,
     sample_dataframe_with_modified,
 )
 import polars as pl
 
 @field_function
-def add_and_scale(a: pl.Expr, b: pl.Expr, factor: int) -> pl.Expr:
+def add_and_scale(a: Reader, b: Reader, factor: int) -> Reader:
     return (a + b) * factor
 
 df = sample_dataframe_with_modified()
@@ -99,7 +100,7 @@ env = Environment(FieldResolver(df.columns))
 numbers = Field("numbers")
 modified = Field("modified_numbers")
 
-df.select(add_and_scale(numbers, modified, factor=2)(env))
+df.select(add_and_scale(numbers(), modified(), factor=2)(env))
 # [22, 44, 66]
 ```
 
@@ -116,6 +117,6 @@ from datadrill import series_function
 def add_and_scale_series(a: pl.Series, b: pl.Series, factor: int) -> pl.Series:
     return (a + b) * factor
 
-df.select(add_and_scale_series(numbers, modified, factor=2)(env))
+df.select(add_and_scale_series(numbers(), modified(), factor=2)(env))
 # [22, 44, 66]
 ```
