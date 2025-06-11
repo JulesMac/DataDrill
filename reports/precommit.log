@@ -1,2 +1,15 @@
 black....................................................................[42mPassed[m
+[2m- hook id: black[m
+[2m- duration: 0.12s[m
+
+[1mAll done! ✨ 🍰 ✨[0m
+[34m1 file [0mleft unchanged.
+
 ruff.....................................................................[42mPassed[m
+[2m- hook id: ruff[m
+[2m- duration: 0.01s[m
+
+[1;33mwarning[0m[1m:[0m [1mThe top-level linter settings are deprecated in favour of their counterparts in the `lint` section. Please update the following options in `pyproject.toml`:
+  - 'select' -> 'lint.select'[0m
+All checks passed!
+

@@ -1,2 +1,10 @@
-.........                                                                [100%]
-9 passed in 0.19s
+============================= test session starts ==============================
+platform linux -- Python 3.13.3, pytest-8.4.0, pluggy-1.6.0
+rootdir: /workspace/DataDrill
+configfile: pyproject.toml
+collected 9 items
+
+tests/test_field_function.py ...                                         [ 33%]
+tests/test_fields.py ......                                              [100%]
+
+============================== 9 passed in 0.39s ===============================
