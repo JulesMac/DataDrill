@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import Callable, Sequence, Any
+from typing import Callable, Sequence, Any, TypeAlias
 
 import polars as pl
 
@@ -57,23 +57,18 @@ class Reader:
         return self._func(env)
 
     @staticmethod
-    def _expr_from(
-        value: Reader | Field | ReaderFunc | pl.Expr | int | float,
-        env: Environment,
-    ) -> pl.Expr:
+    def _expr_from(value: ExprLike, env: Environment) -> pl.Expr:
         if isinstance(value, Reader):
             return value(env)
         if isinstance(value, Field):
             return value()(env)
-        if callable(value):  # treat as ReaderFunc
-            return value(env)
         if isinstance(value, pl.Expr):
             return value
         return pl.lit(value)
 
     def _binary_op(
         self,
-        other: Reader | Field | ReaderFunc | pl.Expr | int | float,
+        other: ExprLike,
         op: Callable[[pl.Expr, pl.Expr], pl.Expr],
         *,
         reverse: bool = False,
@@ -87,124 +82,76 @@ class Reader:
 
         return Reader(wrapper)
 
-    def __add__(
-        self, other: Reader | Field | ReaderFunc | pl.Expr | int | float
-    ) -> Reader:
+    def __add__(self, other: ExprLike) -> Reader:
         return self._binary_op(other, lambda a, b: a + b)
 
-    def __radd__(
-        self, other: Reader | Field | ReaderFunc | pl.Expr | int | float
-    ) -> Reader:
+    def __radd__(self, other: ExprLike) -> Reader:
         return self._binary_op(other, lambda a, b: a + b, reverse=True)
 
-    def __sub__(
-        self, other: Reader | Field | ReaderFunc | pl.Expr | int | float
-    ) -> Reader:
+    def __sub__(self, other: ExprLike) -> Reader:
         return self._binary_op(other, lambda a, b: a - b)
 
-    def __rsub__(
-        self, other: Reader | Field | ReaderFunc | pl.Expr | int | float
-    ) -> Reader:
+    def __rsub__(self, other: ExprLike) -> Reader:
         return self._binary_op(other, lambda a, b: a - b, reverse=True)
 
-    def __mul__(
-        self, other: Reader | Field | ReaderFunc | pl.Expr | int | float
-    ) -> Reader:
+    def __mul__(self, other: ExprLike) -> Reader:
         return self._binary_op(other, lambda a, b: a * b)
 
-    def __rmul__(
-        self, other: Reader | Field | ReaderFunc | pl.Expr | int | float
-    ) -> Reader:
+    def __rmul__(self, other: ExprLike) -> Reader:
         return self._binary_op(other, lambda a, b: a * b, reverse=True)
 
-    def __truediv__(
-        self, other: Reader | Field | ReaderFunc | pl.Expr | int | float
-    ) -> Reader:
+    def __truediv__(self, other: ExprLike) -> Reader:
         return self._binary_op(other, lambda a, b: a / b)
 
-    def __rtruediv__(
-        self, other: Reader | Field | ReaderFunc | pl.Expr | int | float
-    ) -> Reader:
+    def __rtruediv__(self, other: ExprLike) -> Reader:
         return self._binary_op(other, lambda a, b: a / b, reverse=True)
 
-    def __floordiv__(
-        self, other: Reader | Field | ReaderFunc | pl.Expr | int | float
-    ) -> Reader:
+    def __floordiv__(self, other: ExprLike) -> Reader:
         return self._binary_op(other, lambda a, b: a // b)
 
-    def __rfloordiv__(
-        self, other: Reader | Field | ReaderFunc | pl.Expr | int | float
-    ) -> Reader:
+    def __rfloordiv__(self, other: ExprLike) -> Reader:
         return self._binary_op(other, lambda a, b: a // b, reverse=True)
 
-    def __mod__(
-        self, other: Reader | Field | ReaderFunc | pl.Expr | int | float
-    ) -> Reader:
+    def __mod__(self, other: ExprLike) -> Reader:
         return self._binary_op(other, lambda a, b: a % b)
 
-    def __rmod__(
-        self, other: Reader | Field | ReaderFunc | pl.Expr | int | float
-    ) -> Reader:
+    def __rmod__(self, other: ExprLike) -> Reader:
         return self._binary_op(other, lambda a, b: a % b, reverse=True)
 
-    def __pow__(
-        self, other: Reader | Field | ReaderFunc | pl.Expr | int | float
-    ) -> Reader:
+    def __pow__(self, other: ExprLike) -> Reader:
         return self._binary_op(other, lambda a, b: a**b)
 
-    def __rpow__(
-        self, other: Reader | Field | ReaderFunc | pl.Expr | int | float
-    ) -> Reader:
+    def __rpow__(self, other: ExprLike) -> Reader:
         return self._binary_op(other, lambda a, b: a**b, reverse=True)
 
-    def __and__(
-        self, other: Reader | Field | ReaderFunc | pl.Expr | int | float
-    ) -> Reader:
+    def __and__(self, other: ExprLike) -> Reader:
         return self._binary_op(other, lambda a, b: a & b)
 
-    def __rand__(
-        self, other: Reader | Field | ReaderFunc | pl.Expr | int | float
-    ) -> Reader:
+    def __rand__(self, other: ExprLike) -> Reader:
         return self._binary_op(other, lambda a, b: a & b, reverse=True)
 
-    def __or__(
-        self, other: Reader | Field | ReaderFunc | pl.Expr | int | float
-    ) -> Reader:
+    def __or__(self, other: ExprLike) -> Reader:
         return self._binary_op(other, lambda a, b: a | b)
 
-    def __ror__(
-        self, other: Reader | Field | ReaderFunc | pl.Expr | int | float
-    ) -> Reader:
+    def __ror__(self, other: ExprLike) -> Reader:
         return self._binary_op(other, lambda a, b: a | b, reverse=True)
 
-    def __xor__(
-        self, other: Reader | Field | ReaderFunc | pl.Expr | int | float
-    ) -> Reader:
+    def __xor__(self, other: ExprLike) -> Reader:
         return self._binary_op(other, lambda a, b: a ^ b)
 
-    def __rxor__(
-        self, other: Reader | Field | ReaderFunc | pl.Expr | int | float
-    ) -> Reader:
+    def __rxor__(self, other: ExprLike) -> Reader:
         return self._binary_op(other, lambda a, b: a ^ b, reverse=True)
 
-    def __lt__(
-        self, other: Reader | Field | ReaderFunc | pl.Expr | int | float
-    ) -> Reader:
+    def __lt__(self, other: ExprLike) -> Reader:
         return self._binary_op(other, lambda a, b: a < b)
 
-    def __le__(
-        self, other: Reader | Field | ReaderFunc | pl.Expr | int | float
-    ) -> Reader:
+    def __le__(self, other: ExprLike) -> Reader:
         return self._binary_op(other, lambda a, b: a <= b)
 
-    def __gt__(
-        self, other: Reader | Field | ReaderFunc | pl.Expr | int | float
-    ) -> Reader:
+    def __gt__(self, other: ExprLike) -> Reader:
         return self._binary_op(other, lambda a, b: a > b)
 
-    def __ge__(
-        self, other: Reader | Field | ReaderFunc | pl.Expr | int | float
-    ) -> Reader:
+    def __ge__(self, other: ExprLike) -> Reader:
         return self._binary_op(other, lambda a, b: a >= b)
 
     def __eq__(self, other: object) -> Reader:  # type: ignore[override]
@@ -248,6 +195,10 @@ class Field:
         return Reader(reader)
 
 
+# Inputs accepted by Reader._expr_from and map helpers
+ExprLike: TypeAlias = Reader | Field | pl.Expr | int | float
+
+
 def use_prefix(prefix: str) -> Callable[[Reader], Reader]:
     """Force a reader to resolve using ``prefix``."""
 
@@ -271,14 +222,21 @@ def get_data(name: str) -> Reader:
 
 
 def field_function(func: Callable[..., Any]) -> Callable[..., Reader]:
-    """Wrap ``func`` so the return value becomes a :class:`Reader`."""
+    """Wrap ``func`` so the return value becomes a :class:`Reader`.
+
+    The wrapped ``func`` is executed when the resulting reader runs. All
+    arguments are converted to :class:`polars.Expr` using ``Reader._expr_from``
+    first. This ensures user code always operates on resolved expressions
+    rather than ``Reader`` instances.
+    """
 
     def factory(*args: Any, **kwargs: Any) -> Reader:
-        result = func(*args, **kwargs)
-        if isinstance(result, Reader):
-            return result
-
         def reader(env: Environment) -> pl.Expr:
+            call_args = [Reader._expr_from(arg, env) for arg in args]
+            call_kwargs = {
+                key: Reader._expr_from(value, env) for key, value in kwargs.items()
+            }
+            result = func(*call_args, **call_kwargs)
             return Reader._expr_from(result, env)
 
         return Reader(reader)
@@ -296,21 +254,13 @@ def series_function(func: Callable[..., pl.Series]) -> Callable[..., Reader]:
 
             for i, value in enumerate(args):
                 name = f"_{i}"
-                if (
-                    isinstance(value, (Reader, Field))
-                    or callable(value)
-                    or isinstance(value, pl.Expr)
-                ):
+                if isinstance(value, (Reader, Field)) or isinstance(value, pl.Expr):
                     exprs.append(Reader._expr_from(value, env).alias(name))
                 else:
                     constants[name] = value
 
             for name, value in kwargs.items():
-                if (
-                    isinstance(value, (Reader, Field))
-                    or callable(value)
-                    or isinstance(value, pl.Expr)
-                ):
+                if isinstance(value, (Reader, Field)) or isinstance(value, pl.Expr):
                     exprs.append(Reader._expr_from(value, env).alias(name))
                 else:
                     constants[name] = value
@@ -344,7 +294,7 @@ def series_function(func: Callable[..., pl.Series]) -> Callable[..., Reader]:
 
 def map(
     func: Callable[[pl.Expr], pl.Expr | int | float],
-    reader: Reader | Field | ReaderFunc | pl.Expr | int | float,
+    reader: ExprLike,
 ) -> Reader:
     """Apply ``func`` to ``reader`` using the execution environment."""
 
@@ -358,8 +308,8 @@ def map(
 
 def map2(
     func: Callable[[pl.Expr, pl.Expr], pl.Expr | int | float],
-    reader1: Reader | Field | ReaderFunc | pl.Expr | int | float,
-    reader2: Reader | Field | ReaderFunc | pl.Expr | int | float,
+    reader1: ExprLike,
+    reader2: ExprLike,
 ) -> Reader:
     """Apply ``func`` to ``reader1`` and ``reader2`` using the environment."""
 
