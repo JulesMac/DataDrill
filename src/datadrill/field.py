@@ -44,7 +44,7 @@ class Environment:
         return Environment(self.resolver.clear_prefix())
 
 
-ReaderFunc = Callable[[Environment], pl.Expr]
+ReaderFunc = Callable[[Environment], Any]
 
 
 class Reader:
@@ -53,7 +53,7 @@ class Reader:
     def __init__(self, func: ReaderFunc):
         self._func = func
 
-    def __call__(self, env: Environment) -> pl.Expr:
+    def __call__(self, env: Environment) -> Any:
         return self._func(env)
 
     @staticmethod
@@ -320,3 +320,31 @@ def map2(
         return Reader._expr_from(result, env)
 
     return Reader(wrapper)
+
+
+def ask() -> Reader:
+    """Return the current :class:`Environment`."""
+
+    def reader(env: Environment) -> Environment:
+        return env
+
+    return Reader(reader)
+
+
+def asks(func: Callable[[Environment], ExprLike]) -> Reader:
+    """Transform the environment into an expression using ``func``."""
+
+    def reader(env: Environment) -> pl.Expr:
+        value = func(env)
+        return Reader._expr_from(value, env)
+
+    return Reader(reader)
+
+
+def pure(value: ExprLike) -> Reader:
+    """Return a reader that always yields ``value``."""
+
+    def reader(env: Environment) -> pl.Expr:
+        return Reader._expr_from(value, env)
+
+    return Reader(reader)
