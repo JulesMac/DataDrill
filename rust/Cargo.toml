@@ -1,0 +1,9 @@
+[package]
+name = "datadrill"
+version = "0.1.0"
+edition = "2024"
+license = "GPL-2.0"
+authors = ["Codex <codex@openai.com>"]
+
+[dependencies]
+polars = "0.48"
