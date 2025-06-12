@@ -1,6 +1,8 @@
 # DataDrill
 
 DataDrill is a small demonstration project managed with [Poetry](https://python-poetry.org/).
+The reference Python implementation now lives under the `python/` directory to
+avoid mixing with future Rust code.
 
 ## Lines of Code
 
