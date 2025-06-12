@@ -74,6 +74,8 @@ docs/_build/
 # PyBuilder
 .pybuilder/
 target/
+# Rust build output
+rust/target/
 
 # Jupyter Notebook
 .ipynb_checkpoints
