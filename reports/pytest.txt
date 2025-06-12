@@ -1,2 +1,12 @@
-................                                                         [100%]
-16 passed in 0.57s
+============================= test session starts ==============================
+platform linux -- Python 3.13.3, pytest-8.4.0, pluggy-1.6.0
+rootdir: /workspace/DataDrill
+configfile: pyproject.toml
+collected 16 items
+
+tests/test_field_function.py ...                                         [ 18%]
+tests/test_fields.py ......                                              [ 56%]
+tests/test_map.py ..                                                     [ 68%]
+tests/test_reader_extras.py .....                                        [100%]
+
+============================== 16 passed in 0.59s ==============================
