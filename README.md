@@ -10,12 +10,12 @@ Statistics generated with [cloc](https://github.com/AlDanial/cloc):
 
 | Language | Files | Blank | Comment | Code |
 |----------|------:|------:|--------:|-----:|
-| Python   | 4 | 91 | 14 | 260 |
-| Markdown | 2 | 23 | 0 | 51 |
-| YAML     | 2 | 2 | 0 | 42 |
-| TOML     | 1 | 6 | 0 | 23 |
-| Text     | 2 | 2 | 0 | 9 |
-| **Total** | 11 | 124 | 14 | 385 |
+| Python   | 7 | 164 | 27 | 412 |
+| Markdown | 3 | 61 | 0 | 141 |
+| YAML     | 3 | 4 | 0 | 58 |
+| TOML     | 2 | 8 | 0 | 32 |
+| Rust     | 1 | 3 | 0 | 18 |
+| **Total** | 16 | 240 | 27 | 661 |
 
 ## Development
 
@@ -39,6 +39,14 @@ Run unit tests using pytest:
 
 ```bash
 poetry run pytest
+```
+
+### Rust crate
+
+Build and test the Rust implementation with Cargo:
+
+```bash
+cargo test
 ```
 
 ### Test and Lint Reports
