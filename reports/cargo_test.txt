@@ -1,7 +1,14 @@
 
-running 2 tests
-..
-test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+running 7 tests
+test tests::add_scalar ... ignored
+test tests::field_resolver_resolves_prefixed_columns ... ok
+test tests::field_unmodified ... ok
+test tests::field_modified_with_prefix ... ok
+test tests::sample_dataframe_contains_expected_columns ... ok
+test tests::add_field_with_prefix ... ok
+test tests::add_two_fields ... ok
+
+test result: ok. 6 passed; 0 failed; 1 ignored; 0 measured; 0 filtered out; finished in 0.00s
 
 
 running 0 tests
