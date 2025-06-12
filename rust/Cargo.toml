@@ -6,4 +6,4 @@ license = "GPL-2.0"
 authors = ["Codex <codex@openai.com>"]
 
 [dependencies]
-polars = "0.48"
+polars = { version = "0.48", features = ["lazy"] }

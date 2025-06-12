@@ -1,14 +1,10 @@
-black....................................................................[41mFailed[m
-[2m- hook id: black[m
-[2m- files were modified by this hook[m
-
-[1mAll done! ✨ 🍰 ✨[0m
-[34m3 files [0mleft unchanged.
-
-ruff.....................................................................[41mFailed[m
-[2m- hook id: ruff[m
-[2m- files were modified by this hook[m
-
-All checks passed!
-
-
+[INFO][m Initializing environment for https://github.com/psf/black.
+[INFO][m Initializing environment for https://github.com/astral-sh/ruff-pre-commit.
+[INFO][m Installing environment for https://github.com/psf/black.
+[INFO][m Once installed this environment will be reused.
+[INFO][m This may take a few minutes...
+[INFO][m Installing environment for https://github.com/astral-sh/ruff-pre-commit.
+[INFO][m Once installed this environment will be reused.
+[INFO][m This may take a few minutes...
+black................................................(no files to check)[46;30mSkipped[m
+ruff.................................................(no files to check)[46;30mSkipped[m
