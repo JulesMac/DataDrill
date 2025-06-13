@@ -241,6 +241,32 @@ where
     })
 }
 
+pub fn series_function3<A, B, C, F>(func: F, a: A, b: B, c: C) -> Reader<Expr>
+where
+    A: IntoReader + Clone + Send + Sync + 'static,
+    B: IntoReader + Clone + Send + Sync + 'static,
+    C: IntoReader + Clone + Send + Sync + 'static,
+    F: Fn(Series, Series, Series) -> Series + Send + Sync + 'static,
+{
+    let func = Arc::new(func);
+    Reader::new(move |env| {
+        let expr_a = a.clone().into_reader().run(env);
+        let expr_b = b.clone().into_reader().run(env);
+        let expr_c = c.clone().into_reader().run(env);
+        let func = Arc::clone(&func);
+        expr_a.map_many(
+            move |cols: &mut [Column]| {
+                let a = std::mem::take(&mut cols[0]).take_materialized_series();
+                let b = std::mem::take(&mut cols[1]).take_materialized_series();
+                let c = std::mem::take(&mut cols[2]).take_materialized_series();
+                Ok(Some(func(a, b, c).into()))
+            },
+            &[expr_b, expr_c],
+            GetOutput::first(),
+        )
+    })
+}
+
 pub fn sample_dataframe_with_modified() -> DataFrame {
     df! {
         "numbers" => &[1i32, 2, 3],
@@ -501,6 +527,31 @@ mod tests {
         assert_eq!(
             out.column("numbers").unwrap().i32().unwrap().to_vec(),
             vec![Some(11), Some(22), Some(33)]
+        );
+    }
+
+    #[test]
+    fn series_function_basic() {
+        let df = sample_dataframe_with_modified();
+        let env = Environment::new(FieldResolver::new(df.get_column_names_str()));
+        let numbers = Field::new("numbers");
+        let modified = Field::new("modified_numbers");
+
+        let expr = series_function3(
+            |a, b, factor| {
+                let sum = (&a + &b).unwrap();
+                let f = factor.cast(&DataType::Int32).unwrap();
+                (&sum * &f).unwrap()
+            },
+            numbers.reader(),
+            modified.reader(),
+            pure(2i32),
+        )
+        .run(&env);
+        let out = df.lazy().select([expr]).collect().unwrap();
+        assert_eq!(
+            out.column("numbers").unwrap().i32().unwrap().to_vec(),
+            vec![Some(22), Some(44), Some(66)]
         );
     }
 }
