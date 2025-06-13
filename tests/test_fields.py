@@ -2,6 +2,7 @@ from datadrill import (
     Environment,
     Field,
     FieldResolver,
+    get_data,
     use_prefix,
     sample_dataframe_with_modified,
 )
@@ -61,3 +62,19 @@ def test_add_scalar():
 
     result = df.select((numbers() + 1)(env))
     assert result["numbers"].to_list() == [2, 3, 4]
+
+
+def test_get_data_unmodified():
+    df = sample_dataframe_with_modified()
+    env = Environment(FieldResolver(df.columns))
+
+    result = df.select(get_data("numbers")(env))
+    assert result["numbers"].to_list() == [1, 2, 3]
+
+
+def test_get_data_modified_prefix():
+    df = sample_dataframe_with_modified()
+    env = Environment(FieldResolver(df.columns, prefix="modified_"))
+
+    result = df.select(get_data("numbers")(env))
+    assert result["modified_numbers"].to_list() == [10, 20, 30]
