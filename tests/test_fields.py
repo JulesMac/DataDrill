@@ -78,3 +78,12 @@ def test_get_data_modified_prefix():
 
     result = df.select(get_data("numbers")(env))
     assert result["modified_numbers"].to_list() == [10, 20, 30]
+
+
+def test_modulo_field_scalar():
+    df = sample_dataframe_with_modified()
+    env = Environment(FieldResolver(df.columns))
+    numbers = Field("numbers")
+
+    result = df.select((numbers() % 2)(env))
+    assert result["numbers"].to_list() == [1, 0, 1]

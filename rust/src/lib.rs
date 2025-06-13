@@ -1,5 +1,5 @@
 use polars::prelude::*;
-use std::ops::{Add, Div, Mul, Neg, Sub};
+use std::ops::{Add, Div, Mul, Neg, Rem, Sub};
 use std::sync::Arc;
 
 #[derive(Clone, Debug, PartialEq)]
@@ -126,6 +126,7 @@ impl_expr_op!(Add, add, +);
 impl_expr_op!(Sub, sub, -);
 impl_expr_op!(Mul, mul, *);
 impl_expr_op!(Div, div, /);
+impl_expr_op!(Rem, rem, %);
 
 impl Neg for Reader<Expr> {
     type Output = Reader<Expr>;
@@ -558,6 +559,20 @@ mod tests {
         assert_eq!(
             out.column("numbers").unwrap().i32().unwrap().to_vec(),
             vec![Some(2), Some(4), Some(6)]
+        );
+    }
+
+    #[test]
+    fn modulo_field_scalar() {
+        let df = sample_dataframe_with_modified();
+        let env = Environment::new(FieldResolver::new(df.get_column_names_str()));
+        let numbers = Field::new("numbers");
+
+        let expr = (numbers.reader() % 2i32).run(&env);
+        let out = df.lazy().select([expr]).collect().unwrap();
+        assert_eq!(
+            out.column("numbers").unwrap().i32().unwrap().to_vec(),
+            vec![Some(1), Some(0), Some(1)]
         );
     }
 

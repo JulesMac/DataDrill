@@ -1,28 +1,29 @@
 
-running 21 tests
+running 22 tests
 test tests::ask_returns_environment ... ok
 test tests::asks_prefix ... ok
 test tests::add_scalar ... ok
-test tests::add_field_with_prefix ... ok
 test tests::add_two_fields ... ok
-test tests::field_resolver_resolves_prefixed_columns ... ok
-test tests::field_function_with_reader_arg ... ok
+test tests::add_field_with_prefix ... ok
 test tests::field_modified_with_prefix ... ok
 test tests::field_function_basic ... ok
+test tests::field_resolver_resolves_prefixed_columns ... ok
+test tests::field_function_with_reader_arg ... ok
 test tests::field_unmodified ... ok
 test tests::get_data_modified_prefix ... ok
 test tests::get_data_unmodified ... ok
 test tests::map2_basic ... ok
-test tests::map_single_reader ... ok
-test tests::multiply_field_with_scalar ... ok
 test tests::map2_with_asks ... ok
-test tests::pure_constant_addition ... ok
-test tests::neg_field ... ok
+test tests::map_single_reader ... ok
+test tests::modulo_field_scalar ... ok
 test tests::sample_dataframe_contains_expected_columns ... ok
+test tests::multiply_field_with_scalar ... ok
+test tests::neg_field ... ok
+test tests::pure_constant_addition ... ok
 test tests::sub_two_fields ... ok
 test tests::series_function_basic ... ok
 
-test result: ok. 21 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s
+test result: ok. 22 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s
 
 
 running 0 tests
