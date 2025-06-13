@@ -1,5 +1,5 @@
 use polars::prelude::*;
-use std::ops::{Add, Div, Mul, Neg, Rem, Sub};
+use std::ops::{Add, Div, Mul, Neg, Not, Rem, Sub};
 use std::sync::Arc;
 
 #[derive(Clone, Debug, PartialEq)]
@@ -133,6 +133,14 @@ impl Neg for Reader<Expr> {
 
     fn neg(self) -> Self::Output {
         Reader::new(move |env| -self.run(env))
+    }
+}
+
+impl Not for Reader<Expr> {
+    type Output = Reader<Expr>;
+
+    fn not(self) -> Self::Output {
+        Reader::new(move |env| self.run(env).not())
     }
 }
 
@@ -588,6 +596,25 @@ mod tests {
             out.column("numbers").unwrap().i32().unwrap().to_vec(),
             vec![Some(-1), Some(-2), Some(-3)]
         );
+    }
+
+    #[test]
+    fn not_boolean_expression() {
+        let df = sample_dataframe_with_modified();
+        let env = Environment::new(FieldResolver::new(df.get_column_names_str()));
+        let numbers = Field::new("numbers");
+
+        let greater_than_one = map(|a| a.gt(lit(1)), numbers.reader());
+        let expr = (!greater_than_one).alias("result").run(&env);
+        let out = df.lazy().select([expr]).collect().unwrap();
+        let values: Vec<Option<bool>> = out
+            .column("result")
+            .unwrap()
+            .bool()
+            .unwrap()
+            .into_iter()
+            .collect();
+        assert_eq!(values, vec![Some(true), Some(false), Some(false)]);
     }
 
     fn add_and_scale(a: Expr, b: Expr, factor: Expr) -> Expr {
