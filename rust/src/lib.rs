@@ -1,5 +1,5 @@
 use polars::prelude::*;
-use std::ops::Add;
+use std::ops::{Add, Div, Mul, Neg, Sub};
 use std::sync::Arc;
 
 #[derive(Clone, Debug, PartialEq)]
@@ -94,27 +94,44 @@ impl Reader<Expr> {
     }
 }
 
-impl Add for Reader<Expr> {
-    type Output = Reader<Expr>;
+macro_rules! impl_expr_op {
+    ($trait:ident, $method:ident, $op:tt) => {
+        impl $trait for Reader<Expr> {
+            type Output = Reader<Expr>;
 
-    fn add(self, rhs: Reader<Expr>) -> Self::Output {
-        Reader::new(move |env| self.run(env) + rhs.run(env))
-    }
+            fn $method(self, rhs: Reader<Expr>) -> Self::Output {
+                Reader::new(move |env| self.run(env) $op rhs.run(env))
+            }
+        }
+
+        impl $trait<i32> for Reader<Expr> {
+            type Output = Reader<Expr>;
+
+            fn $method(self, rhs: i32) -> Self::Output {
+                Reader::new(move |env| self.run(env) $op lit(rhs).cast(DataType::Int32))
+            }
+        }
+
+        impl $trait<Reader<Expr>> for i32 {
+            type Output = Reader<Expr>;
+
+            fn $method(self, rhs: Reader<Expr>) -> Self::Output {
+                Reader::new(move |env| lit(self).cast(DataType::Int32) $op rhs.run(env))
+            }
+        }
+    };
 }
 
-impl Add<i32> for Reader<Expr> {
+impl_expr_op!(Add, add, +);
+impl_expr_op!(Sub, sub, -);
+impl_expr_op!(Mul, mul, *);
+impl_expr_op!(Div, div, /);
+
+impl Neg for Reader<Expr> {
     type Output = Reader<Expr>;
 
-    fn add(self, rhs: i32) -> Self::Output {
-        Reader::new(move |env| self.run(env) + lit(rhs).cast(DataType::Int32))
-    }
-}
-
-impl Add<Reader<Expr>> for i32 {
-    type Output = Reader<Expr>;
-
-    fn add(self, rhs: Reader<Expr>) -> Self::Output {
-        Reader::new(move |env| lit(self).cast(DataType::Int32) + rhs.run(env))
+    fn neg(self) -> Self::Output {
+        Reader::new(move |env| -self.run(env))
     }
 }
 
@@ -512,6 +529,49 @@ mod tests {
                 .unwrap()
                 .to_vec(),
             vec![Some(19), Some(29), Some(39)]
+        );
+    }
+
+    #[test]
+    fn sub_two_fields() {
+        let df = sample_dataframe_with_modified();
+        let env = Environment::new(FieldResolver::new(df.get_column_names_str()));
+        let numbers = Field::new("numbers");
+        let modified = Field::new("modified_numbers");
+
+        let expr = (numbers.reader() - modified.reader()).run(&env);
+        let out = df.lazy().select([expr]).collect().unwrap();
+        assert_eq!(
+            out.column("numbers").unwrap().i32().unwrap().to_vec(),
+            vec![Some(-9), Some(-18), Some(-27)]
+        );
+    }
+
+    #[test]
+    fn multiply_field_with_scalar() {
+        let df = sample_dataframe_with_modified();
+        let env = Environment::new(FieldResolver::new(df.get_column_names_str()));
+        let numbers = Field::new("numbers");
+
+        let expr = (numbers.reader() * 2i32).run(&env);
+        let out = df.lazy().select([expr]).collect().unwrap();
+        assert_eq!(
+            out.column("numbers").unwrap().i32().unwrap().to_vec(),
+            vec![Some(2), Some(4), Some(6)]
+        );
+    }
+
+    #[test]
+    fn neg_field() {
+        let df = sample_dataframe_with_modified();
+        let env = Environment::new(FieldResolver::new(df.get_column_names_str()));
+        let numbers = Field::new("numbers");
+
+        let expr = (-numbers.reader()).run(&env);
+        let out = df.lazy().select([expr]).collect().unwrap();
+        assert_eq!(
+            out.column("numbers").unwrap().i32().unwrap().to_vec(),
+            vec![Some(-1), Some(-2), Some(-3)]
         );
     }
 

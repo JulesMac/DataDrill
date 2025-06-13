@@ -1,16 +1,9 @@
-black....................................................................[42mPassed[m
-[2m- hook id: black[m
-[2m- duration: 0.17s[m
-
-[1mAll done! ✨ 🍰 ✨[0m
-[34m1 file [0mleft unchanged.
-
-ruff.....................................................................[42mPassed[m
-[2m- hook id: ruff[m
-[2m- duration: 0.01s[m
-
-All checks passed!
-
+Script started on 2025-06-13 19:53:38+00:00 [COMMAND="poetry run pre-commit run --files rust/src/lib.rs" TERM="xterm" COLUMNS="80" LINES="-1"]
+[33mThe currently activated Python version 3.11.12 is not supported by the project (^3.12).
+Trying to find and use a compatible version.[39m 
+Using [36mpython3.13[39m (3.13.3)
+black................................................(no files to check)[46;30mSkipped[m
+ruff.................................................(no files to check)[46;30mSkipped[m
 cargo fmt................................................................[42mPassed[m
-[2m- hook id: cargo-fmt[m
-[2m- duration: 0.17s[m
+
+Script done on 2025-06-13 19:53:41+00:00 [COMMAND_EXIT_CODE="0"]
