@@ -1,16 +1,20 @@
 
-running 9 tests
+running 13 tests
 test tests::add_scalar ... ignored
+test tests::ask_returns_environment ... ok
+test tests::field_modified_with_prefix ... ok
 test tests::field_resolver_resolves_prefixed_columns ... ok
 test tests::field_unmodified ... ok
-test tests::field_modified_with_prefix ... ok
-test tests::map2_basic ... ignored
-test tests::map_single_reader ... ignored
-test tests::sample_dataframe_contains_expected_columns ... ok
-test tests::add_field_with_prefix ... ok
 test tests::add_two_fields ... ok
+test tests::add_field_with_prefix ... ok
+test tests::map2_with_asks ... ignored
+test tests::map_single_reader ... ignored
+test tests::pure_constant_addition ... ignored
+test tests::asks_prefix ... ok
+test tests::sample_dataframe_contains_expected_columns ... ok
+test tests::map2_basic ... ok
 
-test result: ok. 6 passed; 0 failed; 3 ignored; 0 measured; 0 filtered out; finished in 0.01s
+test result: ok. 9 passed; 0 failed; 4 ignored; 0 measured; 0 filtered out; finished in 0.01s
 
 
 running 0 tests
