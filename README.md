@@ -66,6 +66,7 @@ from datadrill import (
     Environment,
     Field,
     FieldResolver,
+    get_data,
     use_prefix,
     sample_dataframe_with_modified,
 )
@@ -83,6 +84,9 @@ df.select(use_prefix("modified_")(numbers())(env))
 # Combine fields with arithmetic operators
 modified = Field("modified_numbers")
 df.select((numbers() + modified())(env))
+
+# Access a column without creating a Field
+df.select(get_data("numbers")(env))
 ```
 
 ## Custom Field Functions

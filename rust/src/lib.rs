@@ -142,6 +142,14 @@ pub fn use_prefix(prefix: &str, reader: Reader<Expr>) -> Reader<Expr> {
     Reader::new(move |env| reader.run(&env.with_prefix(&prefix)))
 }
 
+pub fn get_data(name: &str) -> Reader<Expr> {
+    let name = name.to_string();
+    Reader::new(move |env| {
+        let column = env.resolver().resolve(&name).expect("column not in schema");
+        col(&column)
+    })
+}
+
 pub fn map<F>(func: F, reader: Reader<Expr>) -> Reader<Expr>
 where
     F: Fn(Expr) -> Expr + Send + Sync + 'static,
@@ -385,6 +393,37 @@ mod tests {
         assert_eq!(
             out.column("numbers").unwrap().i32().unwrap().to_vec(),
             vec![Some(2), Some(3), Some(4)]
+        );
+    }
+
+    #[test]
+    fn get_data_unmodified() {
+        let df = sample_dataframe_with_modified();
+        let env = Environment::new(FieldResolver::new(df.get_column_names_str()));
+
+        let expr = get_data("numbers").run(&env);
+        let out = df.lazy().select([expr]).collect().unwrap();
+        assert_eq!(
+            out.column("numbers").unwrap().i32().unwrap().to_vec(),
+            vec![Some(1), Some(2), Some(3)]
+        );
+    }
+
+    #[test]
+    fn get_data_modified_prefix() {
+        let df = sample_dataframe_with_modified();
+        let env = Environment::new(FieldResolver::new(df.get_column_names_str()))
+            .with_prefix("modified_");
+
+        let expr = get_data("numbers").run(&env);
+        let out = df.lazy().select([expr]).collect().unwrap();
+        assert_eq!(
+            out.column("modified_numbers")
+                .unwrap()
+                .i32()
+                .unwrap()
+                .to_vec(),
+            vec![Some(10), Some(20), Some(30)]
         );
     }
 
