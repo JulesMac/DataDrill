@@ -1,3 +1,9 @@
+Script started on 2025-06-13 10:09:16+00:00 [COMMAND="poetry run pre-commit run --files rust/src/lib.rs" TERM="xterm" COLUMNS="80" LINES="-1"]
+[33mThe currently activated Python version 3.11.12 is not supported by the project (^3.12).
+Trying to find and use a compatible version.[39m 
+Using [36mpython3.13[39m (3.13.3)
 black................................................(no files to check)[46;30mSkipped[m
 ruff.................................................(no files to check)[46;30mSkipped[m
 cargo fmt................................................................[42mPassed[m
+
+Script done on 2025-06-13 10:09:20+00:00 [COMMAND_EXIT_CODE="0"]

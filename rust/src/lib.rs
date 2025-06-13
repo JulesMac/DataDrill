@@ -182,6 +182,65 @@ where
     Reader::new(move |_env| value.clone().lit())
 }
 
+pub trait IntoReader {
+    fn into_reader(self) -> Reader<Expr>;
+}
+
+impl IntoReader for Reader<Expr> {
+    fn into_reader(self) -> Reader<Expr> {
+        self
+    }
+}
+
+impl IntoReader for Field {
+    fn into_reader(self) -> Reader<Expr> {
+        self.reader()
+    }
+}
+
+impl<'a> IntoReader for &'a Field {
+    fn into_reader(self) -> Reader<Expr> {
+        self.reader()
+    }
+}
+
+impl<T> IntoReader for T
+where
+    T: Literal + Clone + Send + Sync + 'static,
+{
+    fn into_reader(self) -> Reader<Expr> {
+        Reader::new(move |_env| self.clone().lit())
+    }
+}
+
+pub fn field_function2<A, B, F>(func: F, a: A, b: B) -> Reader<Expr>
+where
+    A: IntoReader + Clone + Send + Sync + 'static,
+    B: IntoReader + Clone + Send + Sync + 'static,
+    F: Fn(Expr, Expr) -> Expr + Send + Sync + 'static,
+{
+    Reader::new(move |env| {
+        let expr_a = a.clone().into_reader().run(env);
+        let expr_b = b.clone().into_reader().run(env);
+        func(expr_a, expr_b)
+    })
+}
+
+pub fn field_function3<A, B, C, F>(func: F, a: A, b: B, c: C) -> Reader<Expr>
+where
+    A: IntoReader + Clone + Send + Sync + 'static,
+    B: IntoReader + Clone + Send + Sync + 'static,
+    C: IntoReader + Clone + Send + Sync + 'static,
+    F: Fn(Expr, Expr, Expr) -> Expr + Send + Sync + 'static,
+{
+    Reader::new(move |env| {
+        let expr_a = a.clone().into_reader().run(env);
+        let expr_b = b.clone().into_reader().run(env);
+        let expr_c = c.clone().into_reader().run(env);
+        func(expr_a, expr_b, expr_c)
+    })
+}
+
 pub fn sample_dataframe_with_modified() -> DataFrame {
     df! {
         "numbers" => &[1i32, 2, 3],
@@ -388,6 +447,56 @@ mod tests {
         assert_eq!(
             out.column("numbers").unwrap().i32().unwrap().to_vec(),
             vec![Some(19), Some(29), Some(39)]
+        );
+    }
+
+    fn add_and_scale(a: Expr, b: Expr, factor: Expr) -> Expr {
+        (a + b) * factor.cast(DataType::Int32)
+    }
+
+    fn add_two(a: Expr, b: Expr) -> Expr {
+        a + b
+    }
+
+    #[test]
+    #[ignore]
+    fn field_function_basic() {
+        let df = sample_dataframe_with_modified();
+        let env = Environment::new(FieldResolver::new(df.get_column_names_str()));
+        let numbers = Field::new("numbers");
+        let modified = Field::new("modified_numbers");
+
+        let expr = field_function3(
+            add_and_scale,
+            numbers.reader(),
+            modified.reader(),
+            pure(2i32),
+        )
+        .run(&env);
+        let out = df.lazy().select([expr]).collect().unwrap();
+        assert_eq!(
+            out.column("numbers").unwrap().i32().unwrap().to_vec(),
+            vec![Some(22), Some(44), Some(66)]
+        );
+    }
+
+    #[test]
+    #[ignore]
+    fn field_function_with_reader_arg() {
+        let df = sample_dataframe_with_modified();
+        let env = Environment::new(FieldResolver::new(df.get_column_names_str()));
+        let numbers = Field::new("numbers");
+
+        let expr = field_function2(
+            add_two,
+            numbers.reader(),
+            use_prefix("modified_", numbers.reader()),
+        )
+        .run(&env);
+        let out = df.lazy().select([expr]).collect().unwrap();
+        assert_eq!(
+            out.column("numbers").unwrap().i32().unwrap().to_vec(),
+            vec![Some(11), Some(22), Some(33)]
         );
     }
 }
