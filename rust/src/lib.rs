@@ -375,7 +375,6 @@ mod tests {
     }
 
     #[test]
-    #[ignore]
     fn add_scalar() {
         let df = sample_dataframe_with_modified();
         let env = Environment::new(FieldResolver::new(df.get_column_names_str()));
@@ -390,7 +389,6 @@ mod tests {
     }
 
     #[test]
-    #[ignore]
     fn map_single_reader() {
         let df = sample_dataframe_with_modified();
         let env = Environment::new(FieldResolver::new(df.get_column_names_str()));
@@ -445,7 +443,6 @@ mod tests {
     }
 
     #[test]
-    #[ignore]
     fn pure_constant_addition() {
         let df = sample_dataframe_with_modified();
         let env = Environment::new(FieldResolver::new(df.get_column_names_str()));
@@ -460,7 +457,6 @@ mod tests {
     }
 
     #[test]
-    #[ignore]
     fn map2_with_asks() {
         let df = sample_dataframe_with_modified();
         let env = Environment::new(FieldResolver::new(df.get_column_names_str()))
@@ -489,7 +485,6 @@ mod tests {
     }
 
     #[test]
-    #[ignore]
     fn field_function_basic() {
         let df = sample_dataframe_with_modified();
         let env = Environment::new(FieldResolver::new(df.get_column_names_str()));
@@ -511,7 +506,6 @@ mod tests {
     }
 
     #[test]
-    #[ignore]
     fn field_function_with_reader_arg() {
         let df = sample_dataframe_with_modified();
         let env = Environment::new(FieldResolver::new(df.get_column_names_str()));
