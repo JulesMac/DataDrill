@@ -2,7 +2,7 @@ use polars::prelude::*;
 use std::ops::Add;
 use std::sync::Arc;
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, PartialEq)]
 pub struct FieldResolver {
     schema: Vec<String>,
     prefix: String,
@@ -30,6 +30,10 @@ impl FieldResolver {
         }
     }
 
+    pub fn prefix(&self) -> &str {
+        &self.prefix
+    }
+
     pub fn resolve(&self, name: &str) -> Result<String, String> {
         let column = format!("{}{}", self.prefix, name);
         if self.schema.iter().any(|c| c == &column) {
@@ -40,7 +44,7 @@ impl FieldResolver {
     }
 }
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, PartialEq)]
 pub struct Environment {
     resolver: FieldResolver,
 }
@@ -68,46 +72,48 @@ impl Environment {
 }
 
 #[derive(Clone)]
-pub struct Reader(Arc<dyn Fn(&Environment) -> Expr + Send + Sync>);
+pub struct Reader<T>(Arc<dyn Fn(&Environment) -> T + Send + Sync>);
 
-impl Reader {
+impl<T> Reader<T> {
     pub fn new<F>(func: F) -> Self
     where
-        F: Fn(&Environment) -> Expr + Send + Sync + 'static,
+        F: Fn(&Environment) -> T + Send + Sync + 'static,
     {
         Self(Arc::new(func))
     }
 
-    pub fn run(&self, env: &Environment) -> Expr {
+    pub fn run(&self, env: &Environment) -> T {
         (self.0)(env)
     }
+}
 
+impl Reader<Expr> {
     pub fn alias(self, name: &str) -> Self {
         let name = name.to_string();
         Reader::new(move |env| self.run(env).alias(&name))
     }
 }
 
-impl Add for Reader {
-    type Output = Reader;
+impl Add for Reader<Expr> {
+    type Output = Reader<Expr>;
 
-    fn add(self, rhs: Reader) -> Self::Output {
+    fn add(self, rhs: Reader<Expr>) -> Self::Output {
         Reader::new(move |env| self.run(env) + rhs.run(env))
     }
 }
 
-impl Add<i32> for Reader {
-    type Output = Reader;
+impl Add<i32> for Reader<Expr> {
+    type Output = Reader<Expr>;
 
     fn add(self, rhs: i32) -> Self::Output {
         Reader::new(move |env| self.run(env) + lit(rhs))
     }
 }
 
-impl Add<Reader> for i32 {
-    type Output = Reader;
+impl Add<Reader<Expr>> for i32 {
+    type Output = Reader<Expr>;
 
-    fn add(self, rhs: Reader) -> Self::Output {
+    fn add(self, rhs: Reader<Expr>) -> Self::Output {
         Reader::new(move |env| lit(self) + rhs.run(env))
     }
 }
@@ -122,7 +128,7 @@ impl Field {
         Self { name: name.into() }
     }
 
-    pub fn reader(&self) -> Reader {
+    pub fn reader(&self) -> Reader<Expr> {
         let name = self.name.clone();
         Reader::new(move |env| {
             let column = env.resolver().resolve(&name).expect("column not in schema");
@@ -131,12 +137,12 @@ impl Field {
     }
 }
 
-pub fn use_prefix(prefix: &str, reader: Reader) -> Reader {
+pub fn use_prefix(prefix: &str, reader: Reader<Expr>) -> Reader<Expr> {
     let prefix = prefix.to_string();
     Reader::new(move |env| reader.run(&env.with_prefix(&prefix)))
 }
 
-pub fn map<F>(func: F, reader: Reader) -> Reader
+pub fn map<F>(func: F, reader: Reader<Expr>) -> Reader<Expr>
 where
     F: Fn(Expr) -> Expr + Send + Sync + 'static,
 {
@@ -146,7 +152,7 @@ where
     })
 }
 
-pub fn map2<F>(func: F, reader1: Reader, reader2: Reader) -> Reader
+pub fn map2<F>(func: F, reader1: Reader<Expr>, reader2: Reader<Expr>) -> Reader<Expr>
 where
     F: Fn(Expr, Expr) -> Expr + Send + Sync + 'static,
 {
@@ -155,6 +161,25 @@ where
         let expr2 = reader2.run(env);
         func(expr1, expr2)
     })
+}
+
+pub fn ask() -> Reader<Environment> {
+    Reader::new(|env| env.clone())
+}
+
+pub fn asks<F, R>(func: F) -> Reader<Expr>
+where
+    F: Fn(&Environment) -> R + Send + Sync + 'static,
+    R: Literal + Clone + 'static,
+{
+    Reader::new(move |env| func(env).clone().lit())
+}
+
+pub fn pure<T>(value: T) -> Reader<Expr>
+where
+    T: Literal + Clone + Send + Sync + 'static,
+{
+    Reader::new(move |_env| value.clone().lit())
 }
 
 pub fn sample_dataframe_with_modified() -> DataFrame {
@@ -295,7 +320,6 @@ mod tests {
     }
 
     #[test]
-    #[ignore]
     fn map2_basic() {
         let df = sample_dataframe_with_modified();
         let env = Environment::new(FieldResolver::new(df.get_column_names_str()));
@@ -307,6 +331,63 @@ mod tests {
         assert_eq!(
             out.column("numbers").unwrap().i32().unwrap().to_vec(),
             vec![Some(11), Some(22), Some(33)]
+        );
+    }
+
+    #[test]
+    fn ask_returns_environment() {
+        let df = sample_dataframe_with_modified();
+        let env = Environment::new(FieldResolver::new(df.get_column_names_str()));
+        let out = ask().run(&env);
+        assert_eq!(out, env);
+    }
+
+    #[test]
+    fn asks_prefix() {
+        let df = sample_dataframe_with_modified();
+        let env = Environment::new(FieldResolver::new(df.get_column_names_str()))
+            .with_prefix("modified_");
+        let expr = asks(|e| e.resolver().prefix().to_string()).run(&env);
+        let out = df.lazy().select([expr]).collect().unwrap();
+        let values: Vec<Option<&str>> = out
+            .column("literal")
+            .unwrap()
+            .str()
+            .unwrap()
+            .into_iter()
+            .collect();
+        assert_eq!(values, vec![Some("modified_")]);
+    }
+
+    #[test]
+    #[ignore]
+    fn pure_constant_addition() {
+        let df = sample_dataframe_with_modified();
+        let env = Environment::new(FieldResolver::new(df.get_column_names_str()));
+        let numbers = Field::new("numbers");
+
+        let expr = (numbers.reader() + pure(1i32)).run(&env);
+        let out = df.lazy().select([expr]).collect().unwrap();
+        assert_eq!(
+            out.column("numbers").unwrap().i32().unwrap().to_vec(),
+            vec![Some(2), Some(3), Some(4)]
+        );
+    }
+
+    #[test]
+    #[ignore]
+    fn map2_with_asks() {
+        let df = sample_dataframe_with_modified();
+        let env = Environment::new(FieldResolver::new(df.get_column_names_str()))
+            .with_prefix("modified_");
+        let numbers = Field::new("numbers");
+        let prefix_len = asks(|e| e.resolver().prefix().len() as i32);
+
+        let expr = map2(|a, b| a + b, numbers.reader(), prefix_len).run(&env);
+        let out = df.lazy().select([expr]).collect().unwrap();
+        assert_eq!(
+            out.column("numbers").unwrap().i32().unwrap().to_vec(),
+            vec![Some(19), Some(29), Some(39)]
         );
     }
 }
