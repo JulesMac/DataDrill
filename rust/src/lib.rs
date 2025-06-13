@@ -106,7 +106,7 @@ impl Add<i32> for Reader<Expr> {
     type Output = Reader<Expr>;
 
     fn add(self, rhs: i32) -> Self::Output {
-        Reader::new(move |env| self.run(env) + lit(rhs))
+        Reader::new(move |env| self.run(env) + lit(rhs).cast(DataType::Int32))
     }
 }
 
@@ -114,7 +114,7 @@ impl Add<Reader<Expr>> for i32 {
     type Output = Reader<Expr>;
 
     fn add(self, rhs: Reader<Expr>) -> Self::Output {
-        Reader::new(move |env| lit(self) + rhs.run(env))
+        Reader::new(move |env| lit(self).cast(DataType::Int32) + rhs.run(env))
     }
 }
 
@@ -445,7 +445,11 @@ mod tests {
         let expr = map2(|a, b| a + b, numbers.reader(), prefix_len).run(&env);
         let out = df.lazy().select([expr]).collect().unwrap();
         assert_eq!(
-            out.column("numbers").unwrap().i32().unwrap().to_vec(),
+            out.column("modified_numbers")
+                .unwrap()
+                .i32()
+                .unwrap()
+                .to_vec(),
             vec![Some(19), Some(29), Some(39)]
         );
     }
