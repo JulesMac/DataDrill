@@ -136,6 +136,27 @@ pub fn use_prefix(prefix: &str, reader: Reader) -> Reader {
     Reader::new(move |env| reader.run(&env.with_prefix(&prefix)))
 }
 
+pub fn map<F>(func: F, reader: Reader) -> Reader
+where
+    F: Fn(Expr) -> Expr + Send + Sync + 'static,
+{
+    Reader::new(move |env| {
+        let expr = reader.run(env);
+        func(expr)
+    })
+}
+
+pub fn map2<F>(func: F, reader1: Reader, reader2: Reader) -> Reader
+where
+    F: Fn(Expr, Expr) -> Expr + Send + Sync + 'static,
+{
+    Reader::new(move |env| {
+        let expr1 = reader1.run(env);
+        let expr2 = reader2.run(env);
+        func(expr1, expr2)
+    })
+}
+
 pub fn sample_dataframe_with_modified() -> DataFrame {
     df! {
         "numbers" => &[1i32, 2, 3],
@@ -255,6 +276,37 @@ mod tests {
         assert_eq!(
             out.column("numbers").unwrap().i32().unwrap().to_vec(),
             vec![Some(2), Some(3), Some(4)]
+        );
+    }
+
+    #[test]
+    #[ignore]
+    fn map_single_reader() {
+        let df = sample_dataframe_with_modified();
+        let env = Environment::new(FieldResolver::new(df.get_column_names_str()));
+        let numbers = Field::new("numbers");
+
+        let expr = map(|a| a + lit(1), numbers.reader()).run(&env);
+        let out = df.lazy().select([expr]).collect().unwrap();
+        assert_eq!(
+            out.column("numbers").unwrap().i32().unwrap().to_vec(),
+            vec![Some(2), Some(3), Some(4)]
+        );
+    }
+
+    #[test]
+    #[ignore]
+    fn map2_basic() {
+        let df = sample_dataframe_with_modified();
+        let env = Environment::new(FieldResolver::new(df.get_column_names_str()));
+        let numbers = Field::new("numbers");
+        let modified = Field::new("modified_numbers");
+
+        let expr = map2(|a, b| a + b, numbers.reader(), modified.reader()).run(&env);
+        let out = df.lazy().select([expr]).collect().unwrap();
+        assert_eq!(
+            out.column("numbers").unwrap().i32().unwrap().to_vec(),
+            vec![Some(11), Some(22), Some(33)]
         );
     }
 }
