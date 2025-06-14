@@ -287,6 +287,20 @@ fn neg_field() {
 }
 
 #[test]
+fn bitand_scalar() {
+    let df = sample_dataframe_with_modified();
+    let env = Environment::new(FieldResolver::new(df.get_column_names_str()));
+    let numbers = Field::new("numbers");
+
+    let expr = (numbers.reader() & 1i32).run(&env);
+    let out = df.lazy().select([expr]).collect().unwrap();
+    assert_eq!(
+        out.column("numbers").unwrap().i32().unwrap().to_vec(),
+        vec![Some(1), Some(0), Some(1)]
+    );
+}
+
+#[test]
 fn not_boolean_expression() {
     let df = sample_dataframe_with_modified();
     let env = Environment::new(FieldResolver::new(df.get_column_names_str()));
