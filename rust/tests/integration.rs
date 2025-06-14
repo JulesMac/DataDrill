@@ -391,3 +391,49 @@ fn series_function_basic() {
         vec![Some(22), Some(44), Some(66)]
     );
 }
+
+#[test]
+fn floor_div_scalar() {
+    let df = sample_dataframe_with_modified();
+    let env = Environment::new(FieldResolver::new(df.get_column_names_str()));
+    let numbers = Field::new("numbers");
+
+    let expr = numbers.reader().floor_div(2i32).run(&env);
+    let out = df.lazy().select([expr]).collect().unwrap();
+    assert_eq!(
+        out.column("numbers").unwrap().i32().unwrap().to_vec(),
+        vec![Some(0), Some(1), Some(1)]
+    );
+}
+
+#[test]
+fn pow_scalar() {
+    let df = sample_dataframe_with_modified();
+    let env = Environment::new(FieldResolver::new(df.get_column_names_str()));
+    let numbers = Field::new("numbers");
+
+    let expr = numbers.reader().pow(2i32).run(&env);
+    let out = df.lazy().select([expr]).collect().unwrap();
+    assert_eq!(
+        out.column("numbers").unwrap().i32().unwrap().to_vec(),
+        vec![Some(1), Some(4), Some(9)]
+    );
+}
+
+#[test]
+fn gt_comparison() {
+    let df = sample_dataframe_with_modified();
+    let env = Environment::new(FieldResolver::new(df.get_column_names_str()));
+    let numbers = Field::new("numbers");
+
+    let expr = numbers.reader().gt(1i32).alias("result").run(&env);
+    let out = df.lazy().select([expr]).collect().unwrap();
+    let values: Vec<Option<bool>> = out
+        .column("result")
+        .unwrap()
+        .bool()
+        .unwrap()
+        .into_iter()
+        .collect();
+    assert_eq!(values, vec![Some(false), Some(true), Some(true)]);
+}
