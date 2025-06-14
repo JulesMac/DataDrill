@@ -1,5 +1,16 @@
-black................................................(no files to check)Skipped
-ruff.................................................(no files to check)Skipped
-cargo fmt................................................................Failed
-- hook id: cargo-fmt
-- files were modified by this hook
+black....................................................................[42mPassed[m
+[2m- hook id: black[m
+[2m- duration: 0.18s[m
+
+[1mAll done! ✨ 🍰 ✨[0m
+[34m1 file [0mleft unchanged.
+
+ruff.....................................................................[42mPassed[m
+[2m- hook id: ruff[m
+[2m- duration: 0.01s[m
+
+All checks passed!
+
+cargo fmt................................................................[42mPassed[m
+[2m- hook id: cargo-fmt[m
+[2m- duration: 0.17s[m

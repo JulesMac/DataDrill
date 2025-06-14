@@ -1,45 +1,9 @@
+error: linking with `cc` failed: exit status: 1
+  |
+  = note:  "cc" "-m64" "/tmp/rustcOBSGBM/symbols.o" "<46 object files omitted>" "-Wl,--as-needed" "-Wl,-Bstatic" "<sysroot>/lib/rustlib/x86_64-unknown-linux-gnu/lib/{libtest-*,libgetopts-*,libunicode_width-*,librustc_std_workspace_std-*}.rlib" "/workspace/DataDrill/rust/target/debug/deps/{libpyo3_polars-3b9b6ffeaff05dac.rlib,libthiserror-10f08da1dac37055.rlib,libpolars-271c8ffcd9ed568f.rlib,libpolars_lazy-5f816cca8bf6ef78.rlib,libpolars_stream-ffdcb2ca71e4a176.rlib,libasync_channel-ec981191d25d453b.rlib,libevent_listener_strategy-2ce3410a3a023832.rlib,libevent_listener-fdd09eff6759f303.rlib,libparking-f072d588e3337e93.rlib,libconcurrent_queue-84f2aaff07850905.rlib,libcrossbeam_queue-1fa8b1dbcfbfd84f.rlib,libpolars_mem_engine-684e170eede9e57e.rlib,libpolars_expr-95956a912492bfa2.rlib,libpolars_plan-6532321998e5f3c6.rlib,libpolars_ffi-e0ee1ca029984c72.rlib,librecursive-4dd36cde13dc9a97.rlib,libstacker-49320d9499f6e7ee.rlib,libpsm-5725d23605054db6.rlib,libpolars_io-ea69a5476928d554.rlib,libhome-aaab8970bcca687f.rlib,libblake3-035b02f7d9eaaf9d.rlib,libconstant_time_eq-361d71284e43752f.rlib,libarrayvec-5f3280febbd4aa59.rlib,libarrayref-a83a2890b6f0ead7.rlib,libglob-d15d76c0231059af.rlib,libfs4-3e4c14791bcbfd77.rlib,librustix-3c4a9fe1e4b76d06.rlib,liblinux_raw_sys-6f68eea35f76ce8f.rlib,libpolars_time-899e3c86b67dfceb.rlib,libnow-f81230f9cb66fef9.rlib,libpolars_ops-829ba1aee31c2175.rlib,liblibm-673035c9f7ef23bc.rlib,libargminmax-acffe071382eee29.rlib,libpolars_core-819ab77c50fb4558.rlib,libxxhash_rust-28c7a51cfdefb212.rlib,libcomfy_table-f847bf64eeadf639.rlib,libunicode_segmentation-dd624fa11cd82a8d.rlib,libunicode_width-058b4f97920a6c9e.rlib,libcrossterm-843cf9e5bc3930ce.rlib,librustix-eb0f575519384777.rlib,liblinux_raw_sys-4a0c260c6dd78b8e.rlib,librand_distr-9e1d79954e2100e1.rlib,libpolars_row-ffa579b746a119ad.rlib,libpolars_compute-84675ee06a483ff0.rlib,libfast_float2-7f442f8017c08709.rlib,libskiplist-3b781a2e2c111274.rlib,libstrength_reduce-6af21c04adedf4ea.rlib,libpolars_arrow-48c0be4f98b95540.rlib,libpolars_schema-d8f46360e7a5525d.rlib,libzstd-3f6ce151b951aeb8.rlib,libzstd_safe-e0a0dad5e72a923f.rlib,libzstd_sys-2162ff5c87fe4162.rlib,liblz4-f939033448619bd6.rlib,liblz4_sys-1d496bbeffcd970f.rlib,libchrono_tz-7ef1b9703dd306b6.rlib,libphf-092164962b7bbbcb.rlib,libphf_shared-ca876724338278bb.rlib,libsiphasher-48fc967a08105e56.rlib,libatoi_simd-2ca37dce21aa2ebf.rlib,libdebug_unsafe-1cacb0e52d231778.rlib,libethnum-df6142b79054fe02.rlib,libdyn_clone-46a2a44e43556c5b.rlib,libstreaming_iterator-baf90495f7b7cefd.rlib,libpolars_utils-13e1b03c6a2117f3.rlib,libflate2-5b78c9ff493b61f4.rlib,libminiz_oxide-9cfd45369302670e.rlib,libadler2-753247d71de7dc9b.rlib,libcrc32fast-bcf0dead87123883.rlib,libserde_ignored-80e9a1b63603a299.rlib,libbincode-7950bfdcfa60369c.rlib,librmp_serde-16e5c26474f78c81.rlib,librmp-3a7d6283228b2946.rlib,libbyteorder-42e03b0443b70f8a.rlib,libcompact_str-0214d3e327e36777.rlib,libstatic_assertions-9ad90952c22c4102.rlib,libcastaway-e7a6fb3b1a71b2ed.rlib,librand-946c3361f95021bd.rlib,librand_chacha-6f39712db76cb170.rlib,librand_core-3539b18cab18165f.rlib,libmemmap2-a0217052103bf831.rlib,libpolars_error-3cb399f127dd3cf5.rlib,libpolars_arrow_format-85b4ddf65f173e64.rlib,libplanus-0f016f9f7db5c600.rlib,libarray_init_cursor-62f3f0c251570a05.rlib,libsimdutf8-83b0bcd40d508c8b.rlib,libobject_store-489e5450ecc0fc18.rlib,libquick_xml-bf420e9b42d67f31.rlib,libhumantime-021023de703f4981.rlib,libthiserror-22da1bc5e2887555.rlib,librand-ca8bee924078b611.rlib,librand_chacha-3bc205db133cecfd.rlib,libppv_lite86-a680a8aa3c461e18.rlib,libzerocopy-c897ee1b51aae087.rlib,librand_core-faddcaf0515fef47.rlib,libgetrandom-151e17bf9938e47b.rlib,libwalkdir-edbfc6d2b455f0bf.rlib,libsame_file-fa3759c6ae4b4446.rlib,libreqwest-d8e2bd2c92031487.rlib,libserde_urlencoded-0f2211eb882fb011.rlib,libhyper_rustls-01559174aaab9155.rlib,librustls_native_certs-0c305cfd9d20f1b2.rlib,libopenssl_probe-d94d2fd3bc8350c1.rlib,libtokio_rustls-a846616da8731dc3.rlib,librustls-98f3d5da948b3209.rlib,libsubtle-77698faf8a20eaf0.rlib,libwebpki-b9664d58964cf89d.rlib,libring-30c383aed92691d9.rlib,libgetrandom-4e45fa5f944c97af.rlib,libuntrusted-04c5f244d99cb9ff.rlib,librustls_pki_types-5057e577df63d865.rlib,libzeroize-0bf2244456e11d13.rlib,libserde_json-c627c38c9bf26120.rlib,libryu-9f5ba4537d50f128.rlib,libtower_http-92c23ab8aae35403.rlib,libiri_string-4ae1339d7bb07979.rlib,libtower-a01655d53f57bd1f.rlib,libtower_layer-5eb2dc861df807b3.rlib,libhyper_util-41280c37db435c75.rlib,libbase64-b113dbe7721f305b.rlib,libipnet-e28ee4bc48edf154.rlib,libtower_service-be3042fd5b5ec18e.rlib,libhyper-1eb6de894c0cd242.rlib,libwant-ab227d66c340117e.rlib,libtry_lock-d1ac2ee828a816eb.rlib,libhttparse-0ce22ce524cd48c5.rlib,libh2-50d52151ddc0b205.rlib,libtracing-66eb96116250b6f0.rlib,libtracing_core-4cd8a9d1ac126dd1.rlib,libindexmap-0fdfee2387f5f47a.rlib,libatomic_waker-5fb9767b2a8bd623.rlib,libtokio_util-9818ac15de0b5945.rlib,libhttp_body_util-361940804fe66275.rlib,libhttp_body-08a2f74bb6e0eb5c.rlib,liblog-7d411810519f3c08.rlib,libsync_wrapper-661e1924cb5fa71a.rlib,libhttp-10267a56711f6a6b.rlib,libitoa-1d34ec624624d608.rlib,libfnv-e363583e1b6fdae8.rlib,libchrono-92ebb023dd677205.rlib,libiana_time_zone-16545b632f2d7e0a.rlib,liburl-a33e919ab8a65040.rlib,libidna-8bde1b914e23db9f.rlib,libutf8_iter-4dd926676127a369.rlib,libidna_adapter-8661ec5b195a83a3.rlib,libicu_properties-922f9ba25e95dc8f.rlib,libicu_properties_data-15731d46e0eee66b.rlib,libicu_normalizer-32d8713125586ff7.rlib,libicu_normalizer_data-853639a78a3f315e.rlib,libicu_collections-8ff11a8cd6667464.rlib,libpotential_utf-2324f40ffd4f8705.rlib,libicu_provider-5f7e5ee08c174a30.rlib,libicu_locale_core-e889fc0300ede1af.rlib,libtinystr-dfd54fac3a7c2dc3.rlib,liblitemap-603bc869f6bcae0f.rlib,libwriteable-2d675ca2424fba83.rlib,libzerovec-a9f28a9e18e3dc0a.rlib,libzerotrie-8e5d87afe737c8b9.rlib,libyoke-12216698e18c8ca1.rlib,libstable_deref_trait-567eccf8a716e5cb.rlib,libzerofrom-f99cfedb3aaca229.rlib,libform_urlencoded-023597fd4225ab59.rlib,libpercent_encoding-3c9d9c63ad89d268.rlib,libitertools-270cb141212e2a6d.rlib,libtokio-37954d91e2f980f5.rlib,libsocket2-227261514fa17533.rlib,libmio-c86ddbb7c080f8d9.rlib,libfutures-ec1bd2d6f2faca69.rlib,libfutures_executor-9ba33dc192d26b79.rlib,libfutures_util-8ed51b531713dccb.rlib,libfutures_io-689fb191a0ac4ccc.rlib,libslab-dc97005b2fdc1213.rlib,libfutures_channel-ea61c7e38ce72c4a.rlib,libpin_project_lite-12250a02a17ca230.rlib,libfutures_sink-72c19411dea1817c.rlib,libfutures_task-59a5705bab797fe3.rlib,libpin_utils-fcd1b7c1cf393c79.rlib,libfutures_core-616deeb37b97cb01.rlib,libbytes-bf1dc0a68b20d2e2.rlib,libsignal_hook-b6d14e4c9d34a534.rlib,libsignal_hook_registry-b30a3f00ca72cb0a.rlib,libpyo3-19290beb4c99366d.rlib,libmemoffset-9176108806c764bd.rlib,libonce_cell-dfa4fa0cc8a504f1.rlib,libpyo3_ffi-980df9a46a4438bf.rlib,libunindent-08118b41d6402206.rlib,libparking_lot-0573fadc397ea9bc.rlib,libparking_lot_core-e82ea46f1c493373.rlib,liblibc-22799f3321850230.rlib,libcfg_if-72f15e4604c43c20.rlib,libsmallvec-174dec70fc4c65a1.rlib,liblock_api-74b6f3919e5f1017.rlib,libscopeguard-9ef05b539fdc0340.rlib,libbytemuck-d2dfa4fc658f89c6.rlib,libregex-be037ee267412c9a.rlib,libregex_automata-2699ee39e2f5c148.rlib,libaho_corasick-8e5f21c69574dddd.rlib,libmemchr-b0c2a54fd01c190d.rlib,libregex_syntax-e9911f1b4a36081d.rlib,libraw_cpuid-ae5d85deaee63c13.rlib,libbitflags-5974adf06c238f8c.rlib,libslotmap-fcd432d32b29c261.rlib,libhashbrown-26a10605e6dc3ac7.rlib,libequivalent-738c042213bdad6a.rlib,librayon-a48ed75c8a2d999d.rlib,librayon_core-03fe025c89b6375a.rlib,libcrossbeam_deque-eccfaf1f8f1660c1.rlib,libcrossbeam_epoch-3809111b7eb0ce04.rlib,libcrossbeam_utils-4c117812295f21c3.rlib,liballocator_api2-824e74dd2449b33c.rlib,libfoldhash-02b08dba4e32b905.rlib,libnum_traits-25bf5515e9c180b6.rlib,libeither-764b49534623b710.rlib,libserde-36ab87dfd107a637.rlib}.rlib" "<sysroot>/lib/rustlib/x86_64-unknown-linux-gnu/lib/{libstd-*,libpanic_unwind-*,libobject-*,libmemchr-*,libaddr2line-*,libgimli-*,librustc_demangle-*,libstd_detect-*,libhashbrown-*,librustc_std_workspace_alloc-*,libminiz_oxide-*,libadler2-*,libunwind-*,libcfg_if-*,liblibc-*,liballoc-*,librustc_std_workspace_core-*,libcore-*,libcompiler_builtins-*}.rlib" "-Wl,-Bdynamic" "-lgcc_s" "-lutil" "-lrt" "-lpthread" "-lm" "-ldl" "-lc" "-L" "/tmp/rustcOBSGBM/raw-dylibs" "-Wl,--eh-frame-hdr" "-Wl,-z,noexecstack" "-L" "/workspace/DataDrill/rust/target/debug/build/lz4-sys-0c6e2cb54c979649/out" "-L" "/workspace/DataDrill/rust/target/debug/build/ring-460d58fe378f7979/out" "-L" "/workspace/DataDrill/rust/target/debug/build/psm-c89836e06ff09362/out" "-L" "/workspace/DataDrill/rust/target/debug/build/zstd-sys-5fde6e33a9c01e8b/out" "-L" "/workspace/DataDrill/rust/target/debug/build/blake3-c4a321ee83c21c7b/out" "-L" "/workspace/DataDrill/rust/target/debug/build/blake3-c4a321ee83c21c7b/out" "-L" "<sysroot>/lib/rustlib/x86_64-unknown-linux-gnu/lib" "-o" "/workspace/DataDrill/rust/target/debug/deps/datadrill-3ca43aa025463baf" "-Wl,--gc-sections" "-pie" "-Wl,-z,relro,-z,now" "-nodefaultlibs"
+  = note: some arguments are omitted. use `--verbose` to show all linker arguments
+  = note: collect2: fatal error: ld terminated with signal 9 [Killed]
+          compilation terminated.
+          
 
-running 0 tests
-
-test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
-
-
-running 30 tests
-test ask_returns_environment ... ok
-test asks_prefix ... ok
-test add_scalar ... ok
-test add_two_fields ... ok
-test add_field_with_prefix ... ok
-test bitand_scalar ... ok
-test eq_comparison ... ok
-test field_function_basic ... ok
-test field_resolver_resolves_prefixed_columns ... ok
-test field_modified_with_prefix ... ok
-test field_function_with_asks ... ok
-test field_function_with_reader_arg ... ok
-test field_unmodified ... ok
-test get_data_modified_prefix ... ok
-test get_data_unmodified ... ok
-test floor_div_scalar ... ok
-test gt_comparison ... ok
-test map2_with_asks ... ok
-test map2_basic ... ok
-test map_single_reader ... ok
-test modulo_field_scalar ... ok
-test multiply_field_with_scalar ... ok
-test ne_comparison ... ok
-test neg_field ... ok
-test sample_dataframe_contains_expected_columns ... ok
-test pure_constant_addition ... ok
-test not_boolean_expression ... ok
-test pow_scalar ... ok
-test series_function_basic ... ok
-test sub_two_fields ... ok
-
-test result: ok. 30 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s
-
-
-running 0 tests
-
-test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
-
+error: could not compile `datadrill` (lib test) due to 1 previous error
