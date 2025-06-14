@@ -437,3 +437,59 @@ fn gt_comparison() {
         .collect();
     assert_eq!(values, vec![Some(false), Some(true), Some(true)]);
 }
+
+#[test]
+fn eq_comparison() {
+    let df = sample_dataframe_with_modified();
+    let env = Environment::new(FieldResolver::new(df.get_column_names_str()));
+    let numbers = Field::new("numbers");
+
+    let expr = numbers.reader().eq_to(2i32).alias("result").run(&env);
+    let out = df.lazy().select([expr]).collect().unwrap();
+    let values: Vec<Option<bool>> = out
+        .column("result")
+        .unwrap()
+        .bool()
+        .unwrap()
+        .into_iter()
+        .collect();
+    assert_eq!(values, vec![Some(false), Some(true), Some(false)]);
+}
+
+#[test]
+fn ne_comparison() {
+    let df = sample_dataframe_with_modified();
+    let env = Environment::new(FieldResolver::new(df.get_column_names_str()));
+    let numbers = Field::new("numbers");
+
+    let expr = numbers.reader().ne_to(1i32).alias("result").run(&env);
+    let out = df.lazy().select([expr]).collect().unwrap();
+    let values: Vec<Option<bool>> = out
+        .column("result")
+        .unwrap()
+        .bool()
+        .unwrap()
+        .into_iter()
+        .collect();
+    assert_eq!(values, vec![Some(false), Some(true), Some(true)]);
+}
+
+#[test]
+fn field_function_with_asks() {
+    let df = sample_dataframe_with_modified();
+    let env =
+        Environment::new(FieldResolver::new(df.get_column_names_str())).with_prefix("modified_");
+    let numbers = Field::new("numbers");
+    let offset = asks(|e| e.resolver().prefix().len() as i32);
+
+    let expr = field_function2(add_two, numbers.reader(), offset).run(&env);
+    let out = df.lazy().select([expr]).collect().unwrap();
+    assert_eq!(
+        out.column("modified_numbers")
+            .unwrap()
+            .i32()
+            .unwrap()
+            .to_vec(),
+        vec![Some(19), Some(29), Some(39)]
+    );
+}
