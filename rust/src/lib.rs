@@ -92,6 +92,86 @@ impl Reader<Expr> {
         let name = name.to_string();
         Reader::new(move |env| self.run(env).alias(&name))
     }
+
+    pub fn floor_div<R>(self, rhs: R) -> Self
+    where
+        R: IntoReader + Clone + Send + Sync + 'static,
+    {
+        Reader::new(move |env| {
+            let rhs_expr = rhs.clone().into_reader().run(env);
+            self.run(env).floor_div(rhs_expr)
+        })
+    }
+
+    pub fn pow<R>(self, rhs: R) -> Self
+    where
+        R: IntoReader + Clone + Send + Sync + 'static,
+    {
+        Reader::new(move |env| {
+            let rhs_expr = rhs.clone().into_reader().run(env);
+            self.run(env).pow(rhs_expr)
+        })
+    }
+
+    pub fn gt<R>(self, rhs: R) -> Self
+    where
+        R: IntoReader + Clone + Send + Sync + 'static,
+    {
+        Reader::new(move |env| {
+            let rhs_expr = rhs.clone().into_reader().run(env);
+            self.run(env).gt(rhs_expr)
+        })
+    }
+
+    pub fn gt_eq<R>(self, rhs: R) -> Self
+    where
+        R: IntoReader + Clone + Send + Sync + 'static,
+    {
+        Reader::new(move |env| {
+            let rhs_expr = rhs.clone().into_reader().run(env);
+            self.run(env).gt_eq(rhs_expr)
+        })
+    }
+
+    pub fn lt<R>(self, rhs: R) -> Self
+    where
+        R: IntoReader + Clone + Send + Sync + 'static,
+    {
+        Reader::new(move |env| {
+            let rhs_expr = rhs.clone().into_reader().run(env);
+            self.run(env).lt(rhs_expr)
+        })
+    }
+
+    pub fn lt_eq<R>(self, rhs: R) -> Self
+    where
+        R: IntoReader + Clone + Send + Sync + 'static,
+    {
+        Reader::new(move |env| {
+            let rhs_expr = rhs.clone().into_reader().run(env);
+            self.run(env).lt_eq(rhs_expr)
+        })
+    }
+
+    pub fn eq_to<R>(self, rhs: R) -> Self
+    where
+        R: IntoReader + Clone + Send + Sync + 'static,
+    {
+        Reader::new(move |env| {
+            let rhs_expr = rhs.clone().into_reader().run(env);
+            self.run(env).eq(rhs_expr)
+        })
+    }
+
+    pub fn ne_to<R>(self, rhs: R) -> Self
+    where
+        R: IntoReader + Clone + Send + Sync + 'static,
+    {
+        Reader::new(move |env| {
+            let rhs_expr = rhs.clone().into_reader().run(env);
+            self.run(env).neq(rhs_expr)
+        })
+    }
 }
 
 macro_rules! impl_expr_op {
