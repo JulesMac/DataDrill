@@ -1,3 +1,5 @@
-black................................................(no files to check)[46;30mSkipped[m
-ruff.................................................(no files to check)[46;30mSkipped[m
-cargo fmt................................................................[42mPassed[m
+black................................................(no files to check)Skipped
+ruff.................................................(no files to check)Skipped
+cargo fmt................................................................Failed
+- hook id: cargo-fmt
+- files were modified by this hook
