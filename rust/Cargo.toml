@@ -5,5 +5,10 @@ edition = "2024"
 license = "GPL-2.0"
 authors = ["Codex <codex@openai.com>"]
 
+[lib]
+crate-type = ["lib", "cdylib"]
+
 [dependencies]
-polars = { version = "0.48", features = ["lazy", "dtype-decimal", "round_series"] }
+polars = { version = "0.48.1", default-features = false, features = ["lazy"] }
+pyo3 = { version = "0.24.2", features = ["extension-module"] }
+pyo3-polars = { version = "0.21.0", default-features = false, features = ["lazy"] }
