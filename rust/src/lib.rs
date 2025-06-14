@@ -1,5 +1,5 @@
 use polars::prelude::*;
-use std::ops::{Add, Div, Mul, Neg, Not, Rem, Sub};
+use std::ops::{Add, BitAnd, BitOr, BitXor, Div, Mul, Neg, Not, Rem, Sub};
 use std::sync::Arc;
 
 #[derive(Clone, Debug, PartialEq)]
@@ -122,11 +122,42 @@ macro_rules! impl_expr_op {
     };
 }
 
+macro_rules! impl_expr_op_method {
+    ($trait:ident, $method:ident, $func:ident) => {
+        impl $trait for Reader<Expr> {
+            type Output = Reader<Expr>;
+
+            fn $method(self, rhs: Reader<Expr>) -> Self::Output {
+                Reader::new(move |env| self.run(env).$func(rhs.run(env)))
+            }
+        }
+
+        impl $trait<i32> for Reader<Expr> {
+            type Output = Reader<Expr>;
+
+            fn $method(self, rhs: i32) -> Self::Output {
+                Reader::new(move |env| self.run(env).$func(lit(rhs).cast(DataType::Int32)))
+            }
+        }
+
+        impl $trait<Reader<Expr>> for i32 {
+            type Output = Reader<Expr>;
+
+            fn $method(self, rhs: Reader<Expr>) -> Self::Output {
+                Reader::new(move |env| lit(self).cast(DataType::Int32).$func(rhs.run(env)))
+            }
+        }
+    };
+}
+
 impl_expr_op!(Add, add, +);
 impl_expr_op!(Sub, sub, -);
 impl_expr_op!(Mul, mul, *);
 impl_expr_op!(Div, div, /);
 impl_expr_op!(Rem, rem, %);
+impl_expr_op_method!(BitAnd, bitand, and);
+impl_expr_op_method!(BitOr, bitor, or);
+impl_expr_op_method!(BitXor, bitxor, xor);
 
 impl Neg for Reader<Expr> {
     type Output = Reader<Expr>;
