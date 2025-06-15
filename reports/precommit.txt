@@ -1,5 +1,22 @@
-black................................................(no files to check)Skipped
-ruff.................................................(no files to check)Skipped
-cargo fmt................................................................Failed
-- hook id: cargo-fmt
-- files were modified by this hook
+Script started on 2025-06-15 00:08:28+00:00 [COMMAND="poetry run pre-commit run --files rust/Cargo.toml rust/src/lib.rs tests/test_bindings.py -v" TERM="xterm" COLUMNS="80" LINES="-1"]
+[33mThe currently activated Python version 3.11.12 is not supported by the project (^3.12).
+Trying to find and use a compatible version.[39m 
+Using [36mpython3.13[39m (3.13.3)
+black....................................................................[42mPassed[m
+[2m- hook id: black[m
+[2m- duration: 0.13s[m
+
+[1mAll done! ✨ 🍰 ✨[0m
+[34m1 file [0mleft unchanged.
+
+ruff.....................................................................[42mPassed[m
+[2m- hook id: ruff[m
+[2m- duration: 0.01s[m
+
+All checks passed!
+
+cargo fmt................................................................[42mPassed[m
+[2m- hook id: cargo-fmt[m
+[2m- duration: 0.18s[m
+
+Script done on 2025-06-15 00:08:31+00:00 [COMMAND_EXIT_CODE="0"]

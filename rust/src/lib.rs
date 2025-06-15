@@ -419,3 +419,22 @@ pub fn sample_dataframe_with_modified() -> DataFrame {
     }
     .unwrap()
 }
+
+// ---- Python bindings ----
+#[cfg(feature = "pybindings")]
+mod py {
+    use super::*;
+    use pyo3::prelude::*;
+    use pyo3_polars::PyDataFrame;
+
+    #[pyfunction]
+    fn sample_dataframe_with_modified_py() -> PyResult<PyDataFrame> {
+        Ok(PyDataFrame(sample_dataframe_with_modified()))
+    }
+
+    #[pymodule]
+    fn datadrill_rs(_py: Python<'_>, m: &Bound<PyModule>) -> PyResult<()> {
+        m.add_function(wrap_pyfunction!(sample_dataframe_with_modified_py, m)?)?;
+        Ok(())
+    }
+}
