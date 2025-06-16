@@ -1,6 +1,7 @@
 """DataDrill package."""
 
 from .core import sample_dataframe_with_modified
+from .dataframe import DataFrame
 from .field import (
     Environment,
     Field,
@@ -32,4 +33,5 @@ __all__ = [
     "series_function",
     "get_data",
     "use_prefix",
+    "DataFrame",
 ]
