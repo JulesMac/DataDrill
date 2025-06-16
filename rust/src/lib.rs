@@ -420,6 +420,58 @@ pub fn sample_dataframe_with_modified() -> DataFrame {
     .unwrap()
 }
 
+pub struct DataFrameOps {
+    df: DataFrame,
+    ops: Vec<Box<dyn Fn(DataFrame, &Environment) -> PolarsResult<DataFrame> + Send + Sync>>,
+}
+
+impl DataFrameOps {
+    pub fn new(df: DataFrame) -> Self {
+        Self {
+            df,
+            ops: Vec::new(),
+        }
+    }
+
+    pub fn filter<R>(mut self, predicate: R) -> Self
+    where
+        R: IntoReader + Clone + Send + Sync + 'static,
+    {
+        self.ops.push(Box::new(move |df, env| {
+            let expr = predicate.clone().into_reader().run(env);
+            df.lazy().filter(expr).collect()
+        }));
+        self
+    }
+
+    pub fn select<I, R>(mut self, exprs: I) -> Self
+    where
+        I: IntoIterator<Item = R> + Clone + Send + Sync + 'static,
+        R: IntoReader + Clone + Send + Sync + 'static,
+    {
+        self.ops.push(Box::new(move |df, env| {
+            let columns: Vec<Expr> = exprs
+                .clone()
+                .into_iter()
+                .map(|e| e.into_reader().run(env))
+                .collect();
+            df.lazy().select(columns).collect()
+        }));
+        self
+    }
+
+    pub fn run(self, env: Option<Environment>) -> PolarsResult<DataFrame> {
+        let env = env.unwrap_or_else(|| {
+            Environment::new(FieldResolver::new(self.df.get_column_names_str()))
+        });
+        let mut df = self.df;
+        for op in self.ops {
+            df = op(df, &env)?;
+        }
+        Ok(df)
+    }
+}
+
 // ---- Python bindings ----
 #[cfg(feature = "pybindings")]
 mod py {
