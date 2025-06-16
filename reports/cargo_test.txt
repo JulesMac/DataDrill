@@ -5,7 +5,37 @@ test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; fini
 
 
 running 30 tests
-..............................
+test ask_returns_environment ... ok
+test asks_prefix ... ok
+test add_scalar ... ok
+test add_field_with_prefix ... ok
+test add_two_fields ... ok
+test bitand_scalar ... ok
+test field_function_with_asks ... ok
+test eq_comparison ... ok
+test field_function_basic ... ok
+test field_resolver_resolves_prefixed_columns ... ok
+test field_modified_with_prefix ... ok
+test field_function_with_reader_arg ... ok
+test field_unmodified ... ok
+test get_data_modified_prefix ... ok
+test floor_div_scalar ... ok
+test gt_comparison ... ok
+test get_data_unmodified ... ok
+test map2_with_asks ... ok
+test map_single_reader ... ok
+test modulo_field_scalar ... ok
+test map2_basic ... ok
+test multiply_field_with_scalar ... ok
+test ne_comparison ... ok
+test neg_field ... ok
+test sample_dataframe_contains_expected_columns ... ok
+test pure_constant_addition ... ok
+test not_boolean_expression ... ok
+test series_function_basic ... ok
+test pow_scalar ... ok
+test sub_two_fields ... ok
+
 test result: ok. 30 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s
 
 

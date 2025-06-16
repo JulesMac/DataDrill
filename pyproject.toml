@@ -4,7 +4,10 @@ version = "0.1.0"
 description = "Data Query tool"
 authors = ["Codex <codex@openai.com>"]
 readme = "README.md"
-packages = [{ include = "datadrill", from = "python/src" }]
+packages = [
+    { include = "datadrill", from = "python/src" },
+    { include = "datadrill_rs", from = "python/src" },
+]
 
 [tool.poetry.dependencies]
 python = "^3.12"
@@ -28,4 +31,8 @@ select = ["E", "F"]
 
 [tool.black]
 line-length = 88
+
+[tool.maturin]
+python-source = "python/src"
+module-name = "datadrill_rs"
 
