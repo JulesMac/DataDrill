@@ -1,0 +1,30 @@
+Checking keyring availability: Unavailable
+Installing dependencies from lock file
+
+Finding the necessary packages for the current system
+
+Package operations: 21 installs, 0 updates, 0 removals
+
+  - Installing distlib (0.3.9)
+  - Installing filelock (3.18.0)
+  - Installing platformdirs (4.3.8)
+  - Installing cfgv (3.4.0)
+  - Installing identify (2.6.12)
+  - Installing click (8.2.1)
+  - Installing mypy-extensions (1.1.0)
+  - Installing iniconfig (2.1.0)
+  - Installing nodeenv (1.9.1)
+  - Installing packaging (25.0)
+  - Installing pathspec (0.12.1)
+  - Installing pluggy (1.6.0)
+  - Installing pygments (2.19.1)
+  - Installing pyyaml (6.0.2)
+  - Installing virtualenv (20.31.2)
+  - Installing black (25.1.0)
+  - Installing maturin (1.8.7)
+  - Installing polars (1.30.0)
+  - Installing pre-commit (4.2.0)
+  - Installing pytest (8.4.0)
+  - Installing ruff (0.11.13)
+
+Installing the current project: datadrill (0.1.0)
