@@ -13,3 +13,5 @@
 - Summarize the results of lint and test runs in the PR description.
 
 - If dependencies are missing, make a best effort to install them using Poetry.
+
+- Keep the Rust implementation up to date with the reference Python code.
