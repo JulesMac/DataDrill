@@ -15,3 +15,6 @@ pyo3-polars = { version = "0.21.0", default-features = false, features = ["lazy"
 
 [features]
 pybindings = ["pyo3", "pyo3-polars"]
+
+[package.metadata.maturin]
+name = "datadrill_rs"

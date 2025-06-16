@@ -13,4 +13,4 @@ except ImportError:
 def test_sample_dataframe_from_rust():
     df = sample_dataframe_with_modified_py()
     expected = pl.DataFrame({"numbers": [1, 2, 3], "modified_numbers": [10, 20, 30]})
-    assert df.frame_equal(expected)
+    assert df.equals(expected)
