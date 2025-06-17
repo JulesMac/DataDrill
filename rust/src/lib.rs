@@ -460,6 +460,18 @@ impl DataFrameOps {
         self
     }
 
+    pub fn sort<R>(mut self, by: R, descending: bool) -> Self
+    where
+        R: IntoReader + Clone + Send + Sync + 'static,
+    {
+        self.ops.push(Box::new(move |df, env| {
+            let expr = by.clone().into_reader().run(env);
+            let options = SortMultipleOptions::new().with_order_descending(descending);
+            df.lazy().sort_by_exprs(vec![expr], options).collect()
+        }));
+        self
+    }
+
     pub fn run(self, env: Option<Environment>) -> PolarsResult<DataFrame> {
         let env = env.unwrap_or_else(|| {
             Environment::new(FieldResolver::new(self.df.get_column_names_str()))
