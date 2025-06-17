@@ -37,6 +37,15 @@ class DataFrame:
 
         return DataFrame(self.df, [*self._ops, op])
 
+    def sort(self, by: ExprSource, *, descending: bool = False) -> DataFrame:
+        """Return a new DataFrame sorted by ``by``."""
+
+        def op(df: pl.DataFrame, env: Environment) -> pl.DataFrame:
+            expr = Reader._expr_from(by, env)
+            return df.sort(by=expr, descending=descending)
+
+        return DataFrame(self.df, [*self._ops, op])
+
     def run(self, env: Environment | None = None) -> pl.DataFrame:
         """Execute stored operations using ``env`` if provided."""
         if env is None:

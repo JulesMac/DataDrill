@@ -21,3 +21,12 @@ def test_run_with_prefix_env():
     env = Environment(FieldResolver(df.columns, prefix="modified_"))
     result = base.select(numbers()).run(env)
     assert result["modified_numbers"].to_list() == [10, 20, 30]
+
+
+def test_sort_descending():
+    df = sample_dataframe_with_modified()
+    base = DataFrame(df)
+    numbers = Field("numbers")
+
+    result = base.sort(numbers(), descending=True).run()
+    assert result["numbers"].to_list() == [3, 2, 1]
