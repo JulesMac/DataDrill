@@ -88,3 +88,7 @@ def add_and_scale_series(a: pl.Series, b: pl.Series, factor: int) -> pl.Series:
 
 df.select(add_and_scale_series(numbers(), modified(), factor=2)(env))
 ```
+
+## Next steps
+
+Explore the [API Reference](api.md) for detailed documentation of all modules and functions.
