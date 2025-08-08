@@ -1,14 +1,11 @@
-The currently activated Python version 3.11.12 is not supported by the project (^3.12).
-Trying to find and use a compatible version. 
-Using python3.13 (3.13.3)
-[INFO] Initializing environment for https://github.com/psf/black.
-[INFO] Initializing environment for https://github.com/astral-sh/ruff-pre-commit.
-[INFO] Installing environment for https://github.com/psf/black.
-[INFO] Once installed this environment will be reused.
-[INFO] This may take a few minutes...
-[INFO] Installing environment for https://github.com/astral-sh/ruff-pre-commit.
-[INFO] Once installed this environment will be reused.
-[INFO] This may take a few minutes...
-black................................................(no files to check)Skipped
-ruff.................................................(no files to check)Skipped
-cargo fmt............................................(no files to check)Skipped
+[INFO][m Initializing environment for https://github.com/psf/black.
+[INFO][m Initializing environment for https://github.com/astral-sh/ruff-pre-commit.
+[INFO][m Installing environment for https://github.com/psf/black.
+[INFO][m Once installed this environment will be reused.
+[INFO][m This may take a few minutes...
+[INFO][m Installing environment for https://github.com/astral-sh/ruff-pre-commit.
+[INFO][m Once installed this environment will be reused.
+[INFO][m This may take a few minutes...
+black................................................(no files to check)[46;30mSkipped[m
+ruff.................................................(no files to check)[46;30mSkipped[m
+cargo fmt............................................(no files to check)[46;30mSkipped[m
