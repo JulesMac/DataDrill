@@ -1,2 +1,17 @@
-....................                                                     [100%]
-20 passed in 161.20s (0:02:41)
+The currently activated Python version 3.11.12 is not supported by the project (^3.12).
+Trying to find and use a compatible version. 
+Using python3.13 (3.13.3)
+===================================================== test session starts ======================================================
+platform linux -- Python 3.13.3, pytest-8.4.0, pluggy-1.6.0
+rootdir: /workspace/DataDrill
+configfile: pyproject.toml
+collected 23 items
+
+tests/test_bindings.py .                                                                                                 [  4%]
+tests/test_dataframe.py ...                                                                                              [ 17%]
+tests/test_field_function.py ...                                                                                         [ 30%]
+tests/test_fields.py .........                                                                                           [ 69%]
+tests/test_map.py ..                                                                                                     [ 78%]
+tests/test_reader_extras.py .....                                                                                        [100%]
+
+================================================ 23 passed in 346.01s (0:05:46) ================================================

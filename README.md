@@ -4,6 +4,16 @@ DataDrill is a small demonstration project managed with [Poetry](https://python-
 The reference Python implementation now lives under the `python/` directory to
 avoid mixing with future Rust code.
 
+## Documentation
+
+Documentation is built with [MkDocs](https://www.mkdocs.org/). Serve locally with:
+
+```bash
+poetry run mkdocs serve
+```
+
+The site includes a Getting Started guide and API reference.
+
 ## Lines of Code
 
 Statistics generated with [cloc](https://github.com/AlDanial/cloc):

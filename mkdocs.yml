@@ -1,0 +1,9 @@
+site_name: DataDrill
+nav:
+  - Getting Started: index.md
+  - API Reference: api.md
+plugins:
+  - mkdocstrings:
+      handlers:
+        python:
+          paths: [python/src]
