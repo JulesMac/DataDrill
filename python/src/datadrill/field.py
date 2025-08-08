@@ -228,6 +228,15 @@ def field_function(func: Callable[..., Any]) -> Callable[..., Reader]:
     arguments are converted to :class:`polars.Expr` using ``Reader._expr_from``
     first. This ensures user code always operates on resolved expressions
     rather than ``Reader`` instances.
+
+    Example:
+        >>> from datadrill import Environment, Field, FieldResolver
+        >>> env = Environment(FieldResolver(["a", "b"]))
+        >>> @field_function
+        ... def add_and_scale(a, b, factor):
+        ...     return (a + b) * factor
+        >>> add_and_scale(Field("a")(), Field("b")(), factor=2)(env)
+        A Polars expression representing ``(a + b) * 2``.
     """
 
     def factory(*args: Any, **kwargs: Any) -> Reader:
@@ -245,7 +254,20 @@ def field_function(func: Callable[..., Any]) -> Callable[..., Reader]:
 
 
 def series_function(func: Callable[..., pl.Series]) -> Callable[..., Reader]:
-    """Wrap ``func`` so it operates on :class:`polars.Series` values."""
+    """Wrap ``func`` so it operates on :class:`polars.Series` values.
+
+    Example:
+        >>> from datadrill import Environment, Field, FieldResolver
+        >>> import polars as pl
+        >>> env = Environment(FieldResolver(["a", "b"]))
+        >>> @series_function
+        ... def add_and_scale_series(
+        ...     a: pl.Series, b: pl.Series, factor: int
+        ... ) -> pl.Series:
+        ...     return (a + b) * factor
+        >>> add_and_scale_series(Field("a")(), Field("b")(), factor=2)(env)
+        A Polars expression applying ``add_and_scale_series`` to the columns.
+    """
 
     def factory(*args: Any, **kwargs: Any) -> Reader:
         def reader(env: Environment) -> pl.Expr:
@@ -296,7 +318,15 @@ def map(
     func: Callable[[pl.Expr], pl.Expr | int | float],
     reader: ExprLike,
 ) -> Reader:
-    """Apply ``func`` to ``reader`` using the execution environment."""
+    """Apply ``func`` to ``reader`` using the execution environment.
+
+    Example:
+        >>> from datadrill import Environment, Field, FieldResolver
+        >>> env = Environment(FieldResolver(["a"]))
+        >>> increment = map(lambda x: x + 1, Field("a"))
+        >>> increment(env)
+        A Polars expression adding ``1`` to column ``a``.
+    """
 
     def wrapper(env: Environment) -> pl.Expr:
         value = Reader._expr_from(reader, env)
@@ -311,7 +341,15 @@ def map2(
     reader1: ExprLike,
     reader2: ExprLike,
 ) -> Reader:
-    """Apply ``func`` to ``reader1`` and ``reader2`` using the environment."""
+    """Apply ``func`` to ``reader1`` and ``reader2`` using the environment.
+
+    Example:
+        >>> from datadrill import Environment, Field, FieldResolver
+        >>> env = Environment(FieldResolver(["a", "b"]))
+        >>> combine = map2(lambda a, b: a + b, Field("a"), Field("b"))
+        >>> combine(env)
+        A Polars expression representing ``a + b``.
+    """
 
     def wrapper(env: Environment) -> pl.Expr:
         value1 = Reader._expr_from(reader1, env)
