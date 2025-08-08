@@ -83,96 +83,128 @@ class Reader:
         return Reader(wrapper)
 
     def __add__(self, other: ExprLike) -> Reader:
+        """Return a reader representing ``self + other``."""
         return self._binary_op(other, lambda a, b: a + b)
 
     def __radd__(self, other: ExprLike) -> Reader:
+        """Return a reader representing ``other + self``."""
         return self._binary_op(other, lambda a, b: a + b, reverse=True)
 
     def __sub__(self, other: ExprLike) -> Reader:
+        """Return a reader representing ``self - other``."""
         return self._binary_op(other, lambda a, b: a - b)
 
     def __rsub__(self, other: ExprLike) -> Reader:
+        """Return a reader representing ``other - self``."""
         return self._binary_op(other, lambda a, b: a - b, reverse=True)
 
     def __mul__(self, other: ExprLike) -> Reader:
+        """Return a reader representing ``self * other``."""
         return self._binary_op(other, lambda a, b: a * b)
 
     def __rmul__(self, other: ExprLike) -> Reader:
+        """Return a reader representing ``other * self``."""
         return self._binary_op(other, lambda a, b: a * b, reverse=True)
 
     def __truediv__(self, other: ExprLike) -> Reader:
+        """Return a reader representing ``self / other``."""
         return self._binary_op(other, lambda a, b: a / b)
 
     def __rtruediv__(self, other: ExprLike) -> Reader:
+        """Return a reader representing ``other / self``."""
         return self._binary_op(other, lambda a, b: a / b, reverse=True)
 
     def __floordiv__(self, other: ExprLike) -> Reader:
+        """Return a reader representing ``self // other``."""
         return self._binary_op(other, lambda a, b: a // b)
 
     def __rfloordiv__(self, other: ExprLike) -> Reader:
+        """Return a reader representing ``other // self``."""
         return self._binary_op(other, lambda a, b: a // b, reverse=True)
 
     def __mod__(self, other: ExprLike) -> Reader:
+        """Return a reader representing ``self % other``."""
         return self._binary_op(other, lambda a, b: a % b)
 
     def __rmod__(self, other: ExprLike) -> Reader:
+        """Return a reader representing ``other % self``."""
         return self._binary_op(other, lambda a, b: a % b, reverse=True)
 
     def __pow__(self, other: ExprLike) -> Reader:
+        """Return a reader representing ``self ** other``."""
         return self._binary_op(other, lambda a, b: a**b)
 
     def __rpow__(self, other: ExprLike) -> Reader:
+        """Return a reader representing ``other ** self``."""
         return self._binary_op(other, lambda a, b: a**b, reverse=True)
 
     def __and__(self, other: ExprLike) -> Reader:
+        """Return a reader representing ``self & other``."""
         return self._binary_op(other, lambda a, b: a & b)
 
     def __rand__(self, other: ExprLike) -> Reader:
+        """Return a reader representing ``other & self``."""
         return self._binary_op(other, lambda a, b: a & b, reverse=True)
 
     def __or__(self, other: ExprLike) -> Reader:
+        """Return a reader representing ``self | other``."""
         return self._binary_op(other, lambda a, b: a | b)
 
     def __ror__(self, other: ExprLike) -> Reader:
+        """Return a reader representing ``other | self``."""
         return self._binary_op(other, lambda a, b: a | b, reverse=True)
 
     def __xor__(self, other: ExprLike) -> Reader:
+        """Return a reader representing ``self ^ other``."""
         return self._binary_op(other, lambda a, b: a ^ b)
 
     def __rxor__(self, other: ExprLike) -> Reader:
+        """Return a reader representing ``other ^ self``."""
         return self._binary_op(other, lambda a, b: a ^ b, reverse=True)
 
     def __lt__(self, other: ExprLike) -> Reader:
+        """Return a reader representing ``self < other``."""
         return self._binary_op(other, lambda a, b: a < b)
 
     def __le__(self, other: ExprLike) -> Reader:
+        """Return a reader representing ``self <= other``."""
         return self._binary_op(other, lambda a, b: a <= b)
 
     def __gt__(self, other: ExprLike) -> Reader:
+        """Return a reader representing ``self > other``."""
         return self._binary_op(other, lambda a, b: a > b)
 
     def __ge__(self, other: ExprLike) -> Reader:
+        """Return a reader representing ``self >= other``."""
         return self._binary_op(other, lambda a, b: a >= b)
 
     def __eq__(self, other: object) -> Reader:  # type: ignore[override]
+        """Return a reader representing ``self == other``."""
         return self._binary_op(other, lambda a, b: a == b)
 
     def __ne__(self, other: object) -> Reader:  # type: ignore[override]
+        """Return a reader representing ``self != other``."""
         return self._binary_op(other, lambda a, b: a != b)
 
     def __neg__(self) -> Reader:
+        """Return a reader representing ``-self``."""
+
         def wrapper(env: Environment) -> pl.Expr:
             return -self(env)
 
         return Reader(wrapper)
 
     def __pos__(self) -> Reader:
+        """Return a reader representing ``+self``."""
+
         def wrapper(env: Environment) -> pl.Expr:
             return +self(env)
 
         return Reader(wrapper)
 
     def __invert__(self) -> Reader:
+        """Return a reader representing ``~self``."""
+
         def wrapper(env: Environment) -> pl.Expr:
             return ~self(env)
 
