@@ -1,15 +1,13 @@
 # API Reference
 
-This section documents the public modules provided by DataDrill.
+This section documents the full public API provided by DataDrill.
 
-## Core utilities
+The API documentation is generated at build time using MkDocs.
+Run the following command and open the resulting site to view the
+rendered docs for every function:
 
-::: datadrill.core
+```bash
+poetry run mkdocs serve
+```
 
-## DataFrame helpers
-
-::: datadrill.dataframe
-
-## Fields and readers
-
-::: datadrill.field
+::: datadrill

@@ -3,4 +3,4 @@ Trying to find and use a compatible version.
 Using python3.13 (3.13.3)
 INFO    -  Cleaning site directory
 INFO    -  Building documentation to directory: /workspace/DataDrill/site
-INFO    -  Documentation built in 0.81 seconds
+INFO    -  Documentation built in 0.77 seconds
